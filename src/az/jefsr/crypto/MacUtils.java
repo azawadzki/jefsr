@@ -13,7 +13,7 @@ import az.jefsr.Main;
 
 public class MacUtils {
 
-	public static long mac64(byte[] data, Key k, ChainedIV chainedIv) throws InvalidKeyException, NoSuchAlgorithmException {
+	public static long mac64(byte[] data, Key k, ChainedIV chainedIv) throws CipherConfigException  {
 		long tmp = MacUtils.checksum64(data, k, chainedIv);
 		if (chainedIv != null) {
 			System.out.printf("iv before assignment: %d\n", chainedIv.value);
@@ -23,10 +23,17 @@ public class MacUtils {
 		return tmp;
 	}
 
-	public static long checksum64(byte[] data, Key k, ChainedIV chainedIV) throws InvalidKeyException, NoSuchAlgorithmException {
+	public static long checksum64(byte[] data, Key k, ChainedIV chainedIV) throws CipherConfigException  {
 		Main.print(data, "checksum64");
-		Mac mac = Mac.getInstance("HmacSHA1");
-		mac.init(new SecretKeySpec(k.getBytes(),"HmacSHA1"));
+		Mac mac;
+		try {
+			mac = Mac.getInstance("HmacSHA1");
+			mac.init(new SecretKeySpec(k.getBytes(),"HmacSHA1"));
+		} catch (InvalidKeyException e) {
+			throw new CipherConfigException("Incompatible key provided", e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new CipherConfigException("Basic crypto algorithms missing", e);
+		}
 		mac.update(data);
 		
 		if (chainedIV != null) {
@@ -49,7 +56,7 @@ public class MacUtils {
 		return ByteBuffer.wrap(h).getLong();
 	}
 
-	public static int mac16(byte[] data, Key k, ChainedIV chainedIv) throws InvalidKeyException, NoSuchAlgorithmException {
+	public static int mac16(byte[] data, Key k, ChainedIV chainedIv) throws CipherConfigException {
 		long m64 = mac64(data, k, chainedIv);
 		int m32 = (int) (((m64 >> 32) & 0xffffffff) ^ (m64 & 0xffffffff));
 		int m16 = ((m32 >> 16) & 0xffff) ^ (m32 & 0xffff);

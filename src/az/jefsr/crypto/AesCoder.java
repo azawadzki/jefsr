@@ -1,11 +1,11 @@
 package az.jefsr.crypto;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
@@ -22,7 +22,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.util.encoders.Base64;
 
-import az.jefsr.Main;
 import az.jefsr.config.Config;
 
 class AesCoder extends Coder {
@@ -30,20 +29,26 @@ class AesCoder extends Coder {
 	final static int KEY_CHECKSUM_BYTES = 4;
 	final static int MAX_IVEC_BYTES = 16;
 
-	public AesCoder(Key key, Config config) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-		
+	public AesCoder(Key key, Config config) throws CipherConfigException {
 		super(key, config);
-		streamCipher = Cipher.getInstance("AES/CFB/NoPadding");
-		blockCipher = Cipher.getInstance("AES/CBC/NoPadding");
-	    
-		mac = Mac.getInstance("HmacSHA1");
-	    mac.init(new SecretKeySpec(key.getBytes(),"HmacSHA1"));
+		try {
+			streamCipher = Cipher.getInstance("AES/CFB/NoPadding");
+			blockCipher = Cipher.getInstance("AES/CBC/NoPadding");
+			mac = Mac.getInstance("HmacSHA1");
+			mac.init(new SecretKeySpec(key.getBytes(),"HmacSHA1"));
+		} catch (NoSuchAlgorithmException e) {
+			throw new CipherConfigException(e);
+		} catch (NoSuchPaddingException e) {
+			throw new CipherConfigException(e);
+		} catch (InvalidKeyException e) {
+			throw new CipherConfigException(e);
+		}
 	}
 
 	static class AesKeyCreator extends KeyCreator {
 
 		@Override
-		public Key createUserKey(String password, Config config) {
+		public Key createUserKey(String password, Config config) throws CipherConfigException {
 			try {
 				byte[] salt = Base64.decode(config.getSaltData());
 				int iterationCount = config.getKdfIterations();
@@ -59,60 +64,82 @@ class AesCoder extends Coder {
 				byte[] ivBytes = Arrays.copyOfRange(secret.getEncoded(), keyByteLen, keyByteLen + MAX_IVEC_BYTES);
 				
 				return new Key(keyBytes, ivBytes);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+			} catch (NoSuchAlgorithmException e) {
+				throw new CipherConfigException(e);
+			} catch (InvalidKeySpecException e) {
+				throw new CipherConfigException(e);
 			}
 		}
 
 		@Override
-		public Key createVolumeKey(Coder passwordCoder, Config config) {
-			try {
-				long checksum = 0;
-				byte[] xmlKeyData = Base64.decode(config.getEncodedKeyData());
+		public Key createVolumeKey(Coder passwordCoder, Config config) throws CipherConfigException {
+			long checksum = 0;
+			byte[] xmlKeyData = Base64.decode(config.getEncodedKeyData());
 
-				for(int i = 0; i < KEY_CHECKSUM_BYTES; ++i) {
-					checksum = (checksum << 8) | (0xff & xmlKeyData[i]);
-				}
-				byte[] encodedKeyBytes = Arrays.copyOfRange(xmlKeyData, KEY_CHECKSUM_BYTES, xmlKeyData.length);
-
-				final int keyByteLen = config.getKeySize() / 8;
-				byte[] deciphered = passwordCoder.decodeStream(encodedKeyBytes, checksum);
-				byte[] keyBytes = Arrays.copyOf(deciphered, keyByteLen);
-				byte[] ivBytes = Arrays.copyOfRange(deciphered, keyByteLen, keyByteLen + MAX_IVEC_BYTES);
-				return new Key(keyBytes, ivBytes);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+			for(int i = 0; i < KEY_CHECKSUM_BYTES; ++i) {
+				checksum = (checksum << 8) | (0xff & xmlKeyData[i]);
 			}
+			byte[] encodedKeyBytes = Arrays.copyOfRange(xmlKeyData, KEY_CHECKSUM_BYTES, xmlKeyData.length);
+
+			final int keyByteLen = config.getKeySize() / 8;
+			
+			byte[] deciphered;
+			try {
+				deciphered = passwordCoder.decodeStream(encodedKeyBytes, checksum);
+			} catch (CipherDataException e) {
+				throw new CipherConfigException("Volume config and key data inconsistent");
+			}
+			
+			byte[] keyBytes = Arrays.copyOf(deciphered, keyByteLen);
+			byte[] ivBytes = Arrays.copyOfRange(deciphered, keyByteLen, keyByteLen + MAX_IVEC_BYTES);
+			return new Key(keyBytes, ivBytes);
 		}
 		
 	}
 	
 	@Override
-	public byte[] decodeStream(byte[] stream, long iv) throws InvalidKeyException, InvalidAlgorithmParameterException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException {
-		Main.print(stream, "decodeStream input");
-
+	public byte[] decodeStream(byte[] stream, long iv) throws CipherDataException {
 		byte[] iv1 = updateIv(iv + 1, MAX_IVEC_BYTES);
-
-		streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), "AES"), new IvParameterSpec(iv1));
-		byte[] decipheredStep1 = streamCipher.doFinal(stream);
-		unshuffle(decipheredStep1);
-		flip(decipheredStep1);
-
-		byte[] iv2 = updateIv(iv, MAX_IVEC_BYTES);
-		streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), "AES"), new IvParameterSpec(iv2));
-
-		byte[] decipheredStep2 = streamCipher.doFinal(decipheredStep1);
-		unshuffle(decipheredStep2);
-		Main.print(decipheredStep2, "decodeStream output");
-
-		return decipheredStep2;
+		try {
+			streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), "AES"), new IvParameterSpec(iv1));
+			byte[] decipheredStep1 = streamCipher.doFinal(stream);
+			unshuffle(decipheredStep1);
+			flip(decipheredStep1);
+			byte[] iv2 = updateIv(iv, MAX_IVEC_BYTES);
+			streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), "AES"), new IvParameterSpec(iv2));
+			byte[] decipheredStep2 = streamCipher.doFinal(decipheredStep1);
+			unshuffle(decipheredStep2);
+			return decipheredStep2;		
+		} catch (InvalidKeyException e) {
+			// not a config error per se, as they should have been reported by KeyCreator already.
+			throw new CipherDataException("Volume key corrupted", e);
+		} catch (InvalidAlgorithmParameterException e) {
+			// as above.
+			throw new CipherDataException("Volume configuration corrupted", e);
+		} catch (IllegalBlockSizeException e) {
+			throw new CipherDataException(e);
+		} catch (BadPaddingException e) {
+			throw new CipherDataException(e);
+		}
 	}
 
 	@Override
-	public byte[] decodeBlock(byte[] block, long iv) throws IOException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException {
+	public byte[] decodeBlock(byte[] block, long iv) throws CipherDataException {
 		byte[] ivec = updateIv(iv, MAX_IVEC_BYTES);
-		blockCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), "AES"), new IvParameterSpec(ivec));
-		return blockCipher.doFinal(block);
+		try {
+			blockCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), "AES"), new IvParameterSpec(ivec));
+			return blockCipher.doFinal(block);
+		} catch (InvalidKeyException e) {
+			// not a config error per se, as they should have been reported by KeyCreator already
+			throw new CipherDataException("Volume key corrupted", e);
+		} catch (InvalidAlgorithmParameterException e) {
+			// as above
+			throw new CipherDataException("Volume configuration corrupted", e);
+		} catch (IllegalBlockSizeException e) {
+			throw new CipherDataException(e);
+		} catch (BadPaddingException e) {
+			throw new CipherDataException(e);
+		}
 	}
 	
 	@Override
@@ -141,7 +168,7 @@ class AesCoder extends Coder {
 		}
 	}
 
-	private byte[] updateIv(long seed, int size) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+	private byte[] updateIv(long seed, int size) {
 		mac.reset();
 		mac.update(getKey().getIv());
 		

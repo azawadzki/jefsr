@@ -1,16 +1,7 @@
 package az.jefsr.crypto;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import az.jefsr.config.Config;
 import az.jefsr.util.ByteEncoder;
@@ -24,13 +15,8 @@ class BlockNameDecoder extends NameDecoder {
 	}
 	
 	@Override	
-	public String decodePath(String path) {
-		try {
-			System.out.printf("!! canonical: %s\n", new File(path).getCanonicalPath());
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	public String decodePath(String path) throws CipherDataException {
+
 		String[] elements = path.split("/");
 		String output = "";
 		ChainedIV seed = new ChainedIV();
@@ -42,11 +28,7 @@ class BlockNameDecoder extends NameDecoder {
 			if (!output.isEmpty()) {
 				output += "/";
 			}
-			try {
-				output += decryptFilename(el, seed);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+			output += decryptFilename(el, seed);
 		}
 		return output;
 	}
@@ -65,7 +47,7 @@ class BlockNameDecoder extends NameDecoder {
 		return decipheredStreamLen - padding;
 	}
 
-	private String decryptFilename(String filename, ChainedIV seed) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+	private String decryptFilename(String filename, ChainedIV seed) throws CipherDataException {
 		byte[] encFilenameData = decodeFilenameData(filename);
 		long mac = 0xffff & ByteBuffer.wrap(encFilenameData, 0, MAC_BYTES).asShortBuffer().get();
 		byte[] encFilename = Arrays.copyOfRange(encFilenameData, MAC_BYTES, encFilenameData.length);
@@ -73,10 +55,14 @@ class BlockNameDecoder extends NameDecoder {
 
 		Coder coder = getCoder();
 		byte[] deciphered = coder.decodeBlock(encFilename, ivValue);
-		MacUtils.mac16(deciphered, coder.getKey(), seed);		
+		try {
+			MacUtils.mac16(deciphered, coder.getKey(), seed);
+		} catch (CipherConfigException e) {
+			throw new CipherDataException("System not providing required hmac functionality", e);
+		}		
 		int finalSize = getDecipheredFilenameSize(filename, deciphered);
 		
 		return new String(Arrays.copyOfRange(deciphered, 0, finalSize));
 	}
-
+	
 }

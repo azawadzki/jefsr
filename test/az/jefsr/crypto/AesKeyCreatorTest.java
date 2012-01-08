@@ -20,14 +20,14 @@ public class AesKeyCreatorTest {
 	}
 
 	@Test
-	public void testCreateUserKey() {
+	public void testCreateUserKey() throws CipherConfigException {
 		Key referenceKey = fsParanoid.getUserKey();
 		Key k = keyCreator.createUserKey(fsParanoid.getUserPassword(), fsParanoid.getConfig());
 		assertThat(k, equalTo(referenceKey));
 	}
 
 	@Test
-	public void testCreateVolumeKey() {
+	public void testCreateVolumeKey() throws CipherConfigException {
 		Config config = fsParanoid.getConfig();
 		byte[] b64Decoded = Base64.decode(config.getEncodedKeyData());
 		byte[] decodedWoutChecksum = Arrays.copyOfRange(b64Decoded, AesCoder.KEY_CHECKSUM_BYTES, b64Decoded.length);
@@ -39,7 +39,7 @@ public class AesKeyCreatorTest {
 	}
 	
 	@Test
-	public void testChecksumDeserialization() {
+	public void testChecksumDeserialization() throws CipherConfigException {
 		byte[] buf = new byte[100];
 		buf[0] = (byte) 0xa1;
 		buf[1] = (byte) 0xb2;
@@ -58,7 +58,7 @@ public class AesKeyCreatorTest {
 	}
 		
 	@Test
-	public void testCreateVolumeKeyCoderIntegration() {
+	public void testCreateVolumeKeyCoderIntegration() throws CipherConfigException {
 		Config config = fsParanoid.getConfig();
 		Coder coder = Coder.Factory.getInstance().createInstance(config.getCipherAlg().getName(), fsParanoid.getUserKey(), config);
 		Key k = keyCreator.createVolumeKey(coder, config);

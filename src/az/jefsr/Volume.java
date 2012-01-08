@@ -6,6 +6,9 @@ import java.io.InputStream;
 
 import az.jefsr.config.Config;
 import az.jefsr.config.ConfigReader;
+import az.jefsr.config.UnsupportedFormatException;
+import az.jefsr.crypto.CipherConfigException;
+import az.jefsr.crypto.CipherDataException;
 import az.jefsr.crypto.Coder;
 import az.jefsr.crypto.Key;
 import az.jefsr.crypto.KeyCreator;
@@ -13,33 +16,39 @@ import az.jefsr.crypto.NameDecoder;
 
 public class Volume {
 	
-	public Volume(String configFilePath) throws FileNotFoundException, ConfigReader.UnsupportedFormat {
+	public Volume(String configFilePath) throws FileNotFoundException, UnsupportedFormatException {
 		config = ConfigReader.Factory.getInstance().createInstance(configFilePath).parse(configFilePath);
 		rootFolder = new File(configFilePath).getParent();
 	}
 	
-	public Volume(String configTag, InputStream in) throws ConfigReader.UnsupportedFormat {
+	public Volume(String configTag, InputStream in) throws UnsupportedFormatException {
 		config = ConfigReader.Factory.getInstance().createInstance(configTag).parse(in);
 	}
 	
 	public boolean init(String userPassword) {
-		try {
+
 			String cipherAlg = config.getCipherAlg().getName();
 			KeyCreator keyCreator = KeyCreator.Factory.getInstance().createInstance(cipherAlg);
-			Key userKey = keyCreator.createUserKey(userPassword, config);
+			Key userKey;
+			try {
+				userKey = keyCreator.createUserKey(userPassword, config);
+			} catch (CipherConfigException e) {
+				return false;
+			}
 			Coder volumePswdCoder = Coder.Factory.getInstance().createInstance(cipherAlg, userKey, config);
-			Key volumeKey = keyCreator.createVolumeKey(volumePswdCoder, config);
+			Key volumeKey;
+			try {
+				volumeKey = keyCreator.createVolumeKey(volumePswdCoder, config);
+			} catch (CipherConfigException e) {
+				return false;
+			}
 			cryptoCoder = Coder.Factory.getInstance().createInstance(cipherAlg, volumeKey, config);
 			String nameAlg = config.getNameAlg().getName();
 			nameDecoder = NameDecoder.Factory.getInstance().createInstance(nameAlg, cryptoCoder, config);
 			// nameDecoder = new NullNameDecoder(cryptoCoder, config);
 
 			return true;
-		} catch (Exception e) {
-			//e.printStackTrace();
-			throw new RuntimeException(e);
-			//return false;
-		}
+
 	}
 		
 	private String getRootFolderRelativePath(String cipheredPath) {
@@ -51,7 +60,7 @@ public class Volume {
 		}
 	}
 	 
-	String decryptPath(String path) {
+	String decryptPath(String path) throws CipherDataException {
 		String cipheredRelPath = getRootFolderRelativePath(path);
 		return nameDecoder.decodePath(cipheredRelPath);
 	}

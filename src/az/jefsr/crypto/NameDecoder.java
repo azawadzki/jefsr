@@ -11,7 +11,7 @@ public abstract class NameDecoder {
 		this.config = config;
 	}
 	
-	public abstract String decodePath(String path);
+	public abstract String decodePath(String path) throws CipherDataException;
 	
 	public Coder getCoder() {
 		return coder;
@@ -26,19 +26,22 @@ public abstract class NameDecoder {
 		static Factory instance = new Factory();
 		static {
 			NameDecoder.Factory.getInstance().registerType("nameio/block", BlockNameDecoder.class);
+			NameDecoder.Factory.getInstance().registerType("nameio/null", NullNameDecoder.class);
 		}	
 		public static Factory getInstance() {
 			return instance;
 		}
 		
 		public NameDecoder createInstance(String nameAlg, Coder coder, Config config) {
+			NameDecoder ret = null;
 			Class<? extends NameDecoder> cls = fetchType(nameAlg);
-			Class<?>[] ctrArgs = { Coder.class, Config.class };
 			try {
-				return cls.getConstructor(ctrArgs).newInstance(coder, config);
-			} catch (Exception e) {
+				Class<?>[] ctrArgs = { Coder.class, Config.class };
+				ret = cls.getConstructor(ctrArgs).newInstance(coder, config);
+			} catch (Throwable e) {
 				throw new RuntimeException(e);
 			}
+			return ret;	
 		}
 		
 	}

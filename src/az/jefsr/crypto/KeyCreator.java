@@ -5,8 +5,8 @@ import az.jefsr.util.FactoryBase;
 
 public abstract class KeyCreator {
 	
-	public abstract Key createUserKey(String password, Config config);
-	public abstract Key createVolumeKey(Coder passwordCoder, Config config);
+	public abstract Key createUserKey(String password, Config config) throws CipherConfigException;
+	public abstract Key createVolumeKey(Coder passwordCoder, Config config) throws CipherConfigException;
 	
 	public static class Factory extends FactoryBase<KeyCreator> {
 		
@@ -20,12 +20,16 @@ public abstract class KeyCreator {
 		}
 		
 		public KeyCreator createInstance(String cipherAlg) {
+			KeyCreator ret = null;;
 			Class<? extends KeyCreator> cls = fetchType(cipherAlg);
-			try {
-				return cls.newInstance();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+			if (cls != null) {
+				try {
+					ret = cls.newInstance();
+				} catch (Throwable e) {
+					throw new RuntimeException(e);
+				}
 			}
+			return ret; 
 		}
 		
 	}

@@ -11,29 +11,20 @@ import az.jefsr.util.FactoryBase;
 
 public abstract class ConfigReader {
 	
-	abstract protected Config parseData(String configText);
+	abstract protected Config parseData(String configText) throws UnsupportedFormatException;
 	
-	public Config parse(String configFilePath) throws FileNotFoundException {
+	public Config parse(String configFilePath) throws FileNotFoundException, UnsupportedFormatException {
 		return parse(new File(configFilePath));
 	}
 	
-	public Config parse(File configFile) throws FileNotFoundException {
+	public Config parse(File configFile) throws FileNotFoundException, UnsupportedFormatException {
 		return parse(new BufferedInputStream(new FileInputStream(configFile)));
 	}
 	
-	public Config parse(InputStream in) {
+	public Config parse(InputStream in) throws UnsupportedFormatException {
 		// TODO: handle cases other than utf8
 		String data = new Scanner(in, "UTF-8").useDelimiter("\\A").next();
 		return parseData(data);
-	}
-	
-	public static class UnsupportedFormat extends Exception {
-
-		private static final long serialVersionUID = 6671639943669176097L;
-
-		private UnsupportedFormat(String configFile) {
-			super("Couldn't find config reader for " + configFile);
-		}
 	}
 	
 	public static class Factory extends FactoryBase<ConfigReader> {
@@ -46,15 +37,15 @@ public abstract class ConfigReader {
 			return instance;
 		}
 		
-		public ConfigReader createInstance(String configFile) throws UnsupportedFormat {
+		public ConfigReader createInstance(String configFile) {
 			String token = new File(configFile).getName();
 			Class<? extends ConfigReader> cls = fetchType(token);
 			if (cls == null) {
-				throw new UnsupportedFormat(configFile);
+				cls = UnsupportedVersionConfigReader.class;
 			}
 			try {
 				return cls.newInstance();
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				throw new RuntimeException(e);
 			}
 		}

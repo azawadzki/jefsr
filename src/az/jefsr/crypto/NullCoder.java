@@ -1,13 +1,5 @@
 package az.jefsr.crypto;
 
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-
 import az.jefsr.config.Config;
 
 public class NullCoder extends Coder {
@@ -16,18 +8,12 @@ public class NullCoder extends Coder {
 		super(key, config);	}
 
 	@Override
-	public byte[] decodeStream(byte[] stream, long iv)
-			throws InvalidKeyException, InvalidAlgorithmParameterException,
-			IOException, IllegalBlockSizeException, BadPaddingException,
-			NoSuchAlgorithmException {
+	public byte[] decodeStream(byte[] stream, long iv) {
 		return stream;
 	}
 
 	@Override
-	public byte[] decodeBlock(byte[] stream, long iv)
-			throws InvalidKeyException, IOException,
-			InvalidAlgorithmParameterException, IllegalBlockSizeException,
-			BadPaddingException, NoSuchAlgorithmException {
+	public byte[] decodeBlock(byte[] stream, long iv) {
 		return stream;
 	}
 

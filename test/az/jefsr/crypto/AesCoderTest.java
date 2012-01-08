@@ -2,15 +2,7 @@ package az.jefsr.crypto;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,7 +20,7 @@ public class AesCoderTest {
 	}
 
 	@Test
-	public void testDecodeStream() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
+	public void testDecodeStream() throws CipherConfigException, CipherDataException {
 		for (CoderFixture f: fsParanoid.getStreamTestVectors()) {
 			Coder coder = new AesCoder(f.getKey(), fsParanoid.getConfig());
 			byte[] out = coder.decodeStream(f.getInput(), f.getIv());
@@ -37,7 +29,7 @@ public class AesCoderTest {
 	}   
 
 	@Test
-	public void testDecodeBlock() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
+	public void testDecodeBlock() throws CipherConfigException, CipherDataException {
 		for (CoderFixture f: fsParanoid.getBlockTestVectors()) {
 			Coder coder = new AesCoder(f.getKey(), fsParanoid.getConfig());
 			byte[] out = coder.decodeBlock(f.getInput(), f.getIv());

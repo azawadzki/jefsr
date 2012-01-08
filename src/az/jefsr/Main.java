@@ -1,38 +1,20 @@
 package az.jefsr;
 
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.InvalidParameterSpecException;
+import java.io.FileNotFoundException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
-
-import az.jefsr.config.ConfigReader.UnsupportedFormat;
+import az.jefsr.config.UnsupportedFormatException;
+import az.jefsr.crypto.CipherDataException;
 
 public class Main {
 
 	/**
 	 * @param args
-	 * @throws NoSuchProviderException 
-	 * @throws NoSuchPaddingException 
-	 * @throws NoSuchAlgorithmException 
-	 * @throws InvalidKeySpecException 
-	 * @throws InvalidKeyException 
-	 * @throws InvalidParameterSpecException 
-	 * @throws BadPaddingException 
-	 * @throws IllegalBlockSizeException 
-	 * @throws InvalidAlgorithmParameterException 
-	 * @throws IOException 
-	 * @throws UnsupportedFormat 
+	 * @throws FileNotFoundException 
+	 * @throws UnsupportedFormatException 
+	 * @throws CipherDataException 
 	 */
-	public static void main(String[] args) throws NoSuchProviderException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeySpecException, InvalidKeyException, InvalidParameterSpecException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException, UnsupportedFormat {
-    	//Security.addProvider(new BouncyCastleProvider());
+	public static void main(String[] args) throws FileNotFoundException, UnsupportedFormatException, CipherDataException {
+		//Security.addProvider(new BouncyCastleProvider());
 		String file = "test-data/paranoid/.encfs6.xml";
     	String userPassword = "test";
     	
