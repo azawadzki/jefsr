@@ -1,8 +1,10 @@
 package az.jefsr.crypto;
 
+import java.io.IOException;
 import java.util.Arrays;
 
-import org.bouncycastle.util.encoders.Base64;
+import net.iharder.base64.Base64;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.hamcrest.CoreMatchers.*;
@@ -27,7 +29,7 @@ public class AesKeyCreatorTest {
 	}
 
 	@Test
-	public void testCreateVolumeKey() throws CipherConfigException {
+	public void testCreateVolumeKey() throws CipherConfigException, IOException {
 		Config config = fsParanoid.getConfig();
 		byte[] b64Decoded = Base64.decode(config.getEncodedKeyData());
 		byte[] decodedWoutChecksum = Arrays.copyOfRange(b64Decoded, AesCoder.KEY_CHECKSUM_BYTES, b64Decoded.length);
@@ -45,7 +47,7 @@ public class AesKeyCreatorTest {
 		buf[1] = (byte) 0xb2;
 		buf[2] = (byte) 0xc3;
 		buf[3] = (byte) 0xd4;
-		String encoded = new String(Base64.encode(buf));
+		String encoded = new String(Base64.encodeBytes(buf));
 		Config config = new Config();
 		config.setEncodedKeyData(encoded);
 		Coder nullCoder = new NullCoder(null, null) {

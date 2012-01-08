@@ -1,5 +1,6 @@
 package az.jefsr.crypto;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.InvalidAlgorithmParameterException;
@@ -20,7 +21,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.bouncycastle.util.encoders.Base64;
+import net.iharder.base64.Base64;
 
 import az.jefsr.config.Config;
 
@@ -49,32 +50,47 @@ class AesCoder extends Coder {
 
 		@Override
 		public Key createUserKey(String password, Config config) throws CipherConfigException {
+			byte[] salt;
 			try {
-				byte[] salt = Base64.decode(config.getSaltData());
-				int iterationCount = config.getKdfIterations();
-				int keyLength = config.getKeySize();
-				SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-
-				final int keyByteLen = keyLength / 8;
-				KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterationCount, keyLength + MAX_IVEC_BYTES*8);
-				SecretKey secret;
-
-				secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
-				byte[] keyBytes = Arrays.copyOf(secret.getEncoded(), keyByteLen);
-				byte[] ivBytes = Arrays.copyOfRange(secret.getEncoded(), keyByteLen, keyByteLen + MAX_IVEC_BYTES);
-				
-				return new Key(keyBytes, ivBytes);
+				salt = Base64.decode(config.getSaltData());
+			} catch (IOException e) {
+				throw new CipherConfigException("Salt data inconsistent");
+			}
+			int iterationCount = config.getKdfIterations();
+			int keyLength = config.getKeySize();
+			SecretKeyFactory factory;
+			try {
+				factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 			} catch (NoSuchAlgorithmException e) {
 				throw new CipherConfigException(e);
+			}
+
+			final int keyByteLen = keyLength / 8;
+			KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterationCount, keyLength + MAX_IVEC_BYTES*8);
+			SecretKey secret;
+
+			try {
+				secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
 			} catch (InvalidKeySpecException e) {
 				throw new CipherConfigException(e);
+
 			}
+			byte[] keyBytes = Arrays.copyOf(secret.getEncoded(), keyByteLen);
+			byte[] ivBytes = Arrays.copyOfRange(secret.getEncoded(), keyByteLen, keyByteLen + MAX_IVEC_BYTES);
+
+			return new Key(keyBytes, ivBytes);
+
 		}
 
 		@Override
 		public Key createVolumeKey(Coder passwordCoder, Config config) throws CipherConfigException {
 			long checksum = 0;
-			byte[] xmlKeyData = Base64.decode(config.getEncodedKeyData());
+			byte[] xmlKeyData;
+			try {
+				xmlKeyData = Base64.decode(config.getEncodedKeyData());
+			} catch (IOException e1) {
+				throw new CipherConfigException("Key data inconsistent");
+			}
 
 			for(int i = 0; i < KEY_CHECKSUM_BYTES; ++i) {
 				checksum = (checksum << 8) | (0xff & xmlKeyData[i]);
