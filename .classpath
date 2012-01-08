@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="libs/bcmail-jdk16-146.jar"/>
+	<classpathentry kind="lib" path="libs/bcpg-jdk16-146.jar"/>
+	<classpathentry kind="lib" path="libs/bcprov-jdk16-146.jar"/>
+	<classpathentry kind="lib" path="libs/bctest-jdk16-146.jar"/>
+	<classpathentry kind="lib" path="libs/bctsp-jdk16-146.jar"/>
+	<classpathentry kind="lib" path="libs/xstream-1.4.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
