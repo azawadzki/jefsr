@@ -37,7 +37,7 @@ class AesCoder extends Coder {
 		blockCipher = Cipher.getInstance("AES/CBC/NoPadding");
 	    
 		mac = Mac.getInstance("HmacSHA1");
-	    mac.init(new SecretKeySpec(key.getKey(),"HmacSHA1"));
+	    mac.init(new SecretKeySpec(key.getBytes(),"HmacSHA1"));
 	}
 
 	static class AesKeyCreator extends KeyCreator {
@@ -73,9 +73,10 @@ class AesCoder extends Coder {
 				for(int i = 0; i < KEY_CHECKSUM_BYTES; ++i) {
 					checksum = (checksum << 8) | (0xff & xmlKeyData[i]);
 				}
+				byte[] encodedKeyBytes = Arrays.copyOfRange(xmlKeyData, KEY_CHECKSUM_BYTES, xmlKeyData.length);
 
 				final int keyByteLen = config.getKeySize() / 8;
-				byte[] deciphered = passwordCoder.decodeStream(xmlKeyData, checksum);
+				byte[] deciphered = passwordCoder.decodeStream(encodedKeyBytes, checksum);
 				byte[] keyBytes = Arrays.copyOf(deciphered, keyByteLen);
 				byte[] ivBytes = Arrays.copyOfRange(deciphered, keyByteLen, keyByteLen + MAX_IVEC_BYTES);
 				return new Key(keyBytes, ivBytes);
@@ -88,28 +89,29 @@ class AesCoder extends Coder {
 	
 	@Override
 	public byte[] decodeStream(byte[] stream, long iv) throws InvalidKeyException, InvalidAlgorithmParameterException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException {
+		Main.print(stream, "decodeStream input");
+
 		byte[] iv1 = updateIv(iv + 1, MAX_IVEC_BYTES);
 
-		streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getKey(), "AES"), new IvParameterSpec(iv1));
-		byte[] s1 = Arrays.copyOfRange(stream, KEY_CHECKSUM_BYTES, stream.length);
-		byte[] s2 = streamCipher.doFinal(s1);
-		unshuffle(s2);
-		flip(s2);
+		streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), "AES"), new IvParameterSpec(iv1));
+		byte[] decipheredStep1 = streamCipher.doFinal(stream);
+		unshuffle(decipheredStep1);
+		flip(decipheredStep1);
 
 		byte[] iv2 = updateIv(iv, MAX_IVEC_BYTES);
-		streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getKey(), "AES"), new IvParameterSpec(iv2));
+		streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), "AES"), new IvParameterSpec(iv2));
 
-		byte[] deciphered = streamCipher.doFinal(s2);
-		unshuffle(deciphered);
-		Main.print(deciphered);
+		byte[] decipheredStep2 = streamCipher.doFinal(decipheredStep1);
+		unshuffle(decipheredStep2);
+		Main.print(decipheredStep2, "decodeStream output");
 
-		return deciphered;
+		return decipheredStep2;
 	}
 
 	@Override
 	public byte[] decodeBlock(byte[] block, long iv) throws IOException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException {
 		byte[] ivec = updateIv(iv, MAX_IVEC_BYTES);
-		blockCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getKey(), "AES"), new IvParameterSpec(ivec));
+		blockCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), "AES"), new IvParameterSpec(ivec));
 		return blockCipher.doFinal(block);
 	}
 	

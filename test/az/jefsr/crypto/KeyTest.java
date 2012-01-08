@@ -8,20 +8,20 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import az.jefsr.crypto.fixtures.FSFixture;
-import az.jefsr.crypto.fixtures.Paranoid;
+import az.jefsr.crypto.fixtures.FSParanoid;
 
 public class KeyTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		fsParanoid = new Paranoid();
+		fsParanoid = new FSParanoid();
 	}
 
 	@Test
 	public void testEqualsObject() {
 		Key k1 = fsParanoid.getUserKey();
 		Key k2 = fsParanoid.getVolumeKey();
-		assertFalse(Arrays.equals(k1.getKey(), k2.getKey()) && Arrays.equals(k1.getIv(), k2.getIv()));
+		assertFalse(Arrays.equals(k1.getBytes(), k2.getBytes()) && Arrays.equals(k1.getIv(), k2.getIv()));
 		assertThat(k1, not(equalTo(k2)));
 		assertThat(k2, not(equalTo(k1)));
 		assertThat(k1, not(equalTo(null)));
@@ -34,7 +34,7 @@ public class KeyTest {
 	public void testHashCode() {
 		Key k1 = fsParanoid.getUserKey();
 		Key k2 = fsParanoid.getVolumeKey();
-		assertFalse(Arrays.equals(k1.getKey(), k2.getKey()) && Arrays.equals(k1.getIv(), k2.getIv()));
+		assertFalse(Arrays.equals(k1.getBytes(), k2.getBytes()) && Arrays.equals(k1.getIv(), k2.getIv()));
 		int k1h = k1.hashCode();
 		int k2h = k2.hashCode();
 		assertThat(k1h, not(equalTo(k2h)));

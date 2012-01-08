@@ -26,7 +26,7 @@ public class MacUtils {
 	public static long checksum64(byte[] data, Key k, ChainedIV chainedIV) throws InvalidKeyException, NoSuchAlgorithmException {
 		Main.print(data, "checksum64");
 		Mac mac = Mac.getInstance("HmacSHA1");
-		mac.init(new SecretKeySpec(k.getKey(),"HmacSHA1"));
+		mac.init(new SecretKeySpec(k.getBytes(),"HmacSHA1"));
 		mac.update(data);
 		
 		if (chainedIV != null) {

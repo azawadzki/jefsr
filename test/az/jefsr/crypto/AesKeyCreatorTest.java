@@ -9,14 +9,14 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import az.jefsr.config.Config;
 import az.jefsr.crypto.fixtures.FSFixture;
-import az.jefsr.crypto.fixtures.Paranoid;
+import az.jefsr.crypto.fixtures.FSParanoid;
 
 public class AesKeyCreatorTest {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		keyCreator = new AesCoder.AesKeyCreator();
-		fsParanoid = new Paranoid();
+		fsParanoid = new FSParanoid();
 	}
 
 	@Test
@@ -30,10 +30,11 @@ public class AesKeyCreatorTest {
 	public void testCreateVolumeKey() {
 		Config config = fsParanoid.getConfig();
 		byte[] b64Decoded = Base64.decode(config.getEncodedKeyData());
+		byte[] decodedWoutChecksum = Arrays.copyOfRange(b64Decoded, AesCoder.KEY_CHECKSUM_BYTES, b64Decoded.length);
 		Coder nullCoder = new NullCoder(null, null);
 		Key k = keyCreator.createVolumeKey(nullCoder, config);
 		int keyBytes = config.getKeySize() / 8;
-		Key nullCoderKey = new Key(Arrays.copyOf(b64Decoded, keyBytes), Arrays.copyOfRange(b64Decoded, keyBytes, keyBytes + AesCoder.MAX_IVEC_BYTES));
+		Key nullCoderKey = new Key(Arrays.copyOf(decodedWoutChecksum, keyBytes), Arrays.copyOfRange(decodedWoutChecksum, keyBytes, keyBytes + AesCoder.MAX_IVEC_BYTES));
 		assertThat(k, equalTo(nullCoderKey));
 	}
 	

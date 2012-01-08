@@ -2,6 +2,7 @@ package az.jefsr.crypto.fixtures;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import az.jefsr.config.Config;
 import az.jefsr.config.ConfigReader;
@@ -13,6 +14,8 @@ public abstract class FSFixture {
 	public abstract byte[] getVolumeKeyBytes();
 	public abstract int getKeySize();
 	public abstract String getConfigFilePath();
+	public abstract List<CoderFixture> getStreamTestVectors();
+	public abstract List<CoderFixture> getBlockTestVectors();
 	
 	protected FSFixture() {
 		String configPath = new File("test-data", getConfigFilePath()).getPath();

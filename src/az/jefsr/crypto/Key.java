@@ -9,7 +9,7 @@ public class Key {
 		this.iv = iv;
 	}
 
-	public byte[] getKey() {
+	public byte[] getBytes() {
 		return key;
 	}
 
@@ -22,7 +22,7 @@ public class Key {
 		boolean ret = false;
 		if (other instanceof Key) {
 			Key otherKey = (Key) other;
-			ret = Arrays.equals(getKey(), otherKey.getKey()) &&
+			ret = Arrays.equals(getBytes(), otherKey.getBytes()) &&
 				Arrays.equals(getIv(), otherKey.getIv());
 		}
 		return ret;
@@ -30,7 +30,7 @@ public class Key {
 	
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(getKey()) + Arrays.hashCode(getIv());
+		return Arrays.hashCode(getBytes()) + Arrays.hashCode(getIv());
 	}
 	
 	private final byte[] key;
