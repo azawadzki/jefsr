@@ -1,29 +1,53 @@
 package az.jefsr.crypto;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import az.jefsr.crypto.fixtures.FSFixture;
+import az.jefsr.crypto.fixtures.FSParanoid;
 
 public class MacUtilsTest {
 
-	@Before
-	public void setUp() throws Exception {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		fsParanoid = new FSParanoid();
 	}
 
 	@Test
-	public void testMac64() {
-		fail("Not yet implemented");
+	public void testMac64() throws CipherConfigException {
+		Key k1 = fsParanoid.getVolumeKey();
+		byte[] input1 = { 114, 101, 97, 100, 109, 101, 46, 116, 120, 116, 6, 6, 6, 6, 6, 6 };
+		long output1 = 444659516657715308L;
+		ChainedIV iv = new ChainedIV();
+		assertThat(MacUtils.mac64(input1, k1, iv), equalTo(output1));
+		assertThat(iv.value, equalTo(444659516657715308L));
+		
+		Key k2 = fsParanoid.getUserKey();
+		byte[] input2 = { 50, -83, 119, -8, 117, 48, -83, 9, -124, -48, 111, 124, -102, 78, -7, 121, -73, 1, -79, 76, -51, -61, -92, -48, 74, 24, -12, -125, -39, 32, 87, 18, -52, 25, 96, -52, 75, -35, -36, -95, -108, 121, -51, 1, 43, 20, -77, -27, };
+		long output2 = -6238161955975967516L;
+		assertThat(MacUtils.mac64(input2, k2, null), equalTo(output2));
 	}
 
 	@Test
-	public void testChecksum64() {
-		fail("Not yet implemented");
+	public void testMac32() throws CipherConfigException {
+		Key k = fsParanoid.getUserKey();
+		byte[] input = { 50, -83, 119, -8, 117, 48, -83, 9, -124, -48, 111, 124, -102, 78, -7, 121, -73, 1, -79, 76, -51, -61, -92, -48, 74, 24, -12, -125, -39, 32, 87, 18, -52, 25, 96, -52, 75, -35, -36, -95, -108, 121, -51, 1, 43, 20, -77, -27, };
+		int output = 1004524580;
+		assertThat(MacUtils.mac32(input, k, null), equalTo(output));
 	}
 
 	@Test
-	public void testMac16() {
-		fail("Not yet implemented");
+	public void testMac16() throws CipherConfigException {
+		Key k = fsParanoid.getVolumeKey();
+		byte[] input = { 114, 101, 97, 100, 109, 101, 46, 116, 120, 116, 6, 6, 6, 6, 6, 6 };
+		int output = 35167;
+		ChainedIV iv = new ChainedIV();
+		assertThat(MacUtils.mac16(input, k, iv), equalTo(output));
+		assertThat(iv.value, equalTo(444659516657715308L));
 	}
 
+	static FSFixture fsParanoid;
 }

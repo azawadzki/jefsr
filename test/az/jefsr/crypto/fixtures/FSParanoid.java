@@ -3,6 +3,7 @@ package az.jefsr.crypto.fixtures;
 import java.util.ArrayList;
 import java.util.List;
 
+import az.jefsr.crypto.CipherConfigException;
 import az.jefsr.crypto.Key;
 
 public class FSParanoid extends FSFixture {
@@ -36,7 +37,7 @@ public class FSParanoid extends FSFixture {
 	}
 
 	@Override
-	public List<CoderFixture> getStreamTestVectors() {
+	public List<CoderFixture> getStreamTestVectors() throws CipherConfigException {
 		Key k1 = getUserKey();
 		byte[] i1 = { 45, 98, -3, -12, 67, -8, -83, -69, -85, 37, 33, -115, -119, -103, -111, -13, -20, -84, 0, 10, -110, -61, -25, -17, 113, 79, 44, -91, -44, 43, 56, 107, -69, -82, -37, -56, 80, 123, -95, -34, -29, -32, 97, 37, -119, -22, -5, 83 };
 		long iv = 1004524580;
@@ -47,7 +48,7 @@ public class FSParanoid extends FSFixture {
 	}
 
 	@Override
-	public List<CoderFixture> getBlockTestVectors() {
+	public List<CoderFixture> getBlockTestVectors() throws CipherConfigException {
 		Key k1 = getVolumeKey();
 		final byte[] i1 = { 31, 55, -8, -22, -119, 88, -3, -62, 100, -9, 52, 106, -118, -101, -68, 88 };
 		long iv = 35167;

@@ -1,12 +1,26 @@
 package az.jefsr.crypto;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Key {
 
-	public Key(byte[] key, byte[] iv) {
+	public Key(byte[] key, byte[] iv) throws CipherConfigException {
 		this.key = key;
 		this.iv = iv;
+		
+		try {
+			mac = Mac.getInstance("HmacSHA1");
+			mac.init(new SecretKeySpec(getBytes(),"HmacSHA1"));
+		} catch (NoSuchAlgorithmException e) {
+			throw new CipherConfigException(e);
+		} catch (InvalidKeyException e) {
+			throw new CipherConfigException(e);
+		}
 	}
 
 	public byte[] getBytes() {
@@ -15,6 +29,10 @@ public class Key {
 
 	public byte[] getIv() {
 		return iv;
+	}
+	
+	public Mac getHMacCounter() {
+		return mac;
 	}
 
 	@Override
@@ -35,5 +53,5 @@ public class Key {
 	
 	private final byte[] key;
 	private final byte[] iv;
-	
+	private Mac mac;
 }

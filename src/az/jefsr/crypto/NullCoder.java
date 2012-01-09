@@ -20,12 +20,12 @@ public class NullCoder extends Coder {
 	static class NullKeyCreator extends KeyCreator {
 
 		@Override
-		public Key createUserKey(String password, Config config) {
+		public Key createUserKey(String password, Config config) throws CipherConfigException {
 			return new Key(new byte[0], new byte[0]);
 		}
 
 		@Override
-		public Key createVolumeKey(Coder passwordCoder, Config config) {
+		public Key createVolumeKey(Coder passwordCoder, Config config) throws CipherConfigException {
 			return new Key(new byte[0], new byte[0]);
 		}
 		

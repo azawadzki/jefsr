@@ -41,16 +41,15 @@ public class AesKeyCreatorTest {
 	}
 	
 	@Test
-	public void testChecksumDeserialization() throws CipherConfigException {
-		byte[] buf = new byte[100];
+	public void testChecksumDeserialization() throws CipherConfigException, IOException {
+		Config config = new FSParanoid().getConfig();
+		byte[] buf = Base64.decode(config.getEncodedKeyData());
 		buf[0] = (byte) 0xa1;
 		buf[1] = (byte) 0xb2;
 		buf[2] = (byte) 0xc3;
 		buf[3] = (byte) 0xd4;
-		String encoded = new String(Base64.encodeBytes(buf));
-		Config config = new Config();
-		config.setEncodedKeyData(encoded);
-		Coder nullCoder = new NullCoder(null, null) {
+		config.setEncodedKeyData(new String(Base64.encodeBytes(buf)));
+		Coder nullCoder = new NullCoder(fsParanoid.getUserKey(), null) {
 			public byte[] decodeStream(byte[] stream, long iv) {
 				assertThat(iv, equalTo(0xa1b2c3d4L));
 				return stream;

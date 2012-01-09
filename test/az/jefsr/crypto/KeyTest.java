@@ -18,7 +18,7 @@ public class KeyTest {
 	}
 
 	@Test
-	public void testEqualsObject() {
+	public void testEqualsObject() throws CipherConfigException {
 		Key k1 = fsParanoid.getUserKey();
 		Key k2 = fsParanoid.getVolumeKey();
 		assertFalse(Arrays.equals(k1.getBytes(), k2.getBytes()) && Arrays.equals(k1.getIv(), k2.getIv()));
@@ -31,7 +31,7 @@ public class KeyTest {
 	}
 
 	@Test
-	public void testHashCode() {
+	public void testHashCode() throws CipherConfigException {
 		Key k1 = fsParanoid.getUserKey();
 		Key k2 = fsParanoid.getVolumeKey();
 		assertFalse(Arrays.equals(k1.getBytes(), k2.getBytes()) && Arrays.equals(k1.getIv(), k2.getIv()));

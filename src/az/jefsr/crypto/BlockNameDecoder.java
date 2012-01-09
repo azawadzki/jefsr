@@ -55,11 +55,7 @@ class BlockNameDecoder extends NameDecoder {
 
 		Coder coder = getCoder();
 		byte[] deciphered = coder.decodeBlock(encFilename, ivValue);
-		try {
-			MacUtils.mac16(deciphered, coder.getKey(), seed);
-		} catch (CipherConfigException e) {
-			throw new CipherDataException("System not providing required hmac functionality", e);
-		}		
+		MacUtils.mac16(deciphered, coder.getKey(), seed);	
 		int finalSize = getDecipheredFilenameSize(filename, deciphered);
 		
 		return new String(Arrays.copyOfRange(deciphered, 0, finalSize));

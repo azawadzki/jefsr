@@ -2,38 +2,26 @@ package az.jefsr.crypto;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 import az.jefsr.Main;
 
 
 public class MacUtils {
 
-	public static long mac64(byte[] data, Key k, ChainedIV chainedIv) throws CipherConfigException  {
+	public static long mac64(byte[] data, Key k, ChainedIV chainedIv) {
 		long tmp = MacUtils.checksum64(data, k, chainedIv);
 		if (chainedIv != null) {
-			System.out.printf("iv before assignment: %d\n", chainedIv.value);
 			chainedIv.value = tmp;
-			System.out.printf("iv after assignment: %d\n", chainedIv.value);
 		}
 		return tmp;
 	}
 
-	public static long checksum64(byte[] data, Key k, ChainedIV chainedIV) throws CipherConfigException  {
+	public static long checksum64(byte[] data, Key k, ChainedIV chainedIV) {
 		Main.print(data, "checksum64");
-		Mac mac;
-		try {
-			mac = Mac.getInstance("HmacSHA1");
-			mac.init(new SecretKeySpec(k.getBytes(),"HmacSHA1"));
-		} catch (InvalidKeyException e) {
-			throw new CipherConfigException("Incompatible key provided", e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new CipherConfigException("Basic crypto algorithms missing", e);
-		}
+		Mac mac = k.getHMacCounter();
+		mac.reset();
 		mac.update(data);
 		
 		if (chainedIV != null) {
@@ -55,15 +43,17 @@ public class MacUtils {
 		System.out.printf("final value: %d\n", ByteBuffer.wrap(h).getLong());
 		return ByteBuffer.wrap(h).getLong();
 	}
-
-	public static int mac16(byte[] data, Key k, ChainedIV chainedIv) throws CipherConfigException {
+	
+	public static int mac32(byte[] data, Key k, ChainedIV chainedIv) {
 		long m64 = mac64(data, k, chainedIv);
 		int m32 = (int) (((m64 >> 32) & 0xffffffff) ^ (m64 & 0xffffffff));
+		return m32;
+
+	}
+
+	public static int mac16(byte[] data, Key k, ChainedIV chainedIv) {
+		int m32 = mac32(data, k, chainedIv);
 		int m16 = ((m32 >> 16) & 0xffff) ^ (m32 & 0xffff);
-	
-		System.out.printf("mac64: %d\n", m64);
-		System.out.printf("mac32: %d\n", m32);
-		System.out.printf("mac16: %d\n", m16);
 		return m16;
 	}
 
