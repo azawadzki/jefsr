@@ -84,7 +84,6 @@ class AesCoder extends Coder {
 
 		@Override
 		public Key createVolumeKey(Coder passwordCoder, Config config) throws CipherConfigException {
-			long checksum = 0;
 			byte[] xmlKeyData;
 			try {
 				xmlKeyData = Base64.decode(config.getEncodedKeyData());
@@ -92,9 +91,8 @@ class AesCoder extends Coder {
 				throw new CipherConfigException("Key data inconsistent");
 			}
 
-			for(int i = 0; i < KEY_CHECKSUM_BYTES; ++i) {
-				checksum = (checksum << 8) | (0xff & xmlKeyData[i]);
-			}
+			ByteBuffer bb = ByteBuffer.wrap(xmlKeyData, 0, KEY_CHECKSUM_BYTES);
+			int checksum = bb.order(ByteOrder.BIG_ENDIAN).asIntBuffer().get();
 			byte[] encodedKeyBytes = Arrays.copyOfRange(xmlKeyData, KEY_CHECKSUM_BYTES, xmlKeyData.length);
 
 			final int keyByteLen = config.getKeySize() / 8;
@@ -115,16 +113,19 @@ class AesCoder extends Coder {
 	
 	@Override
 	public byte[] decodeStream(byte[] stream, long iv) throws CipherDataException {
-		byte[] iv1 = updateIv(iv + 1, MAX_IVEC_BYTES);
-		try {
+		try {		
+			byte[] iv1 = updateIv(iv + 1, MAX_IVEC_BYTES);
 			streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), "AES"), new IvParameterSpec(iv1));
 			byte[] decipheredStep1 = streamCipher.doFinal(stream);
 			unshuffle(decipheredStep1);
+			
 			flip(decipheredStep1);
+			
 			byte[] iv2 = updateIv(iv, MAX_IVEC_BYTES);
 			streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), "AES"), new IvParameterSpec(iv2));
 			byte[] decipheredStep2 = streamCipher.doFinal(decipheredStep1);
 			unshuffle(decipheredStep2);
+			
 			return decipheredStep2;		
 		} catch (InvalidKeyException e) {
 			// not a config error per se, as they should have been reported by KeyCreator already.

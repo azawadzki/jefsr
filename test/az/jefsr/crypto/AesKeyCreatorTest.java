@@ -1,6 +1,8 @@
 package az.jefsr.crypto;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import net.iharder.base64.Base64;
@@ -51,7 +53,7 @@ public class AesKeyCreatorTest {
 		config.setEncodedKeyData(new String(Base64.encodeBytes(buf)));
 		Coder nullCoder = new NullCoder(fsParanoid.getUserKey(), null) {
 			public byte[] decodeStream(byte[] stream, long iv) {
-				assertThat(iv, equalTo(0xa1b2c3d4L));
+				assertThat(iv, equalTo(0x00000000a1b2c3d4L));
 				return stream;
 			}
 		};

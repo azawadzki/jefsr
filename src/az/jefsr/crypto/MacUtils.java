@@ -5,9 +5,6 @@ import java.nio.ByteOrder;
 
 import javax.crypto.Mac;
 
-import az.jefsr.Main;
-
-
 public class MacUtils {
 
 	public static long mac64(byte[] data, Key k, ChainedIV chainedIv) {
@@ -19,7 +16,6 @@ public class MacUtils {
 	}
 
 	public static long checksum64(byte[] data, Key k, ChainedIV chainedIV) {
-		Main.print(data, "checksum64");
 		Mac mac = k.getHMacCounter();
 		mac.reset();
 		mac.update(data);
@@ -28,19 +24,15 @@ public class MacUtils {
 			ByteBuffer bb = ByteBuffer.allocate(Long.SIZE / 8);
 			bb.order(ByteOrder.LITTLE_ENDIAN);
 			bb.putLong(chainedIV.value);
-			Main.print(bb.array(), "tossed iv");
 			mac.update(bb.array());
 		}
 	
-		byte[] md = mac.doFinal();
-		Main.print(md, "hmac");
-	
+		byte[] md = mac.doFinal();	
 		// chop this down to a 64bit value..
 		byte h[] = new byte[8];
 		for (int i=0; i < md.length - 1; ++i) {
 			h[i % 8] ^= md[i];
 		}
-		System.out.printf("final value: %d\n", ByteBuffer.wrap(h).getLong());
 		return ByteBuffer.wrap(h).getLong();
 	}
 	
@@ -48,7 +40,6 @@ public class MacUtils {
 		long m64 = mac64(data, k, chainedIv);
 		int m32 = (int) (((m64 >> 32) & 0xffffffff) ^ (m64 & 0xffffffff));
 		return m32;
-
 	}
 
 	public static int mac16(byte[] data, Key k, ChainedIV chainedIv) {
