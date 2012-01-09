@@ -101,7 +101,7 @@ class AesCoder extends Coder {
 			
 			byte[] deciphered;
 			try {
-				deciphered = passwordCoder.decodeStream(encodedKeyBytes, checksum);
+				deciphered = passwordCoder.decodeStream(encodedKeyBytes, 0x00000000ffffffffL & checksum);
 			} catch (CipherDataException e) {
 				throw new CipherConfigException("Volume config and key data inconsistent");
 			}
