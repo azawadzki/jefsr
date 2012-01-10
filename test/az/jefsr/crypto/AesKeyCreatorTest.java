@@ -1,16 +1,16 @@
 package az.jefsr.crypto;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import net.iharder.base64.Base64;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+
 import az.jefsr.config.Config;
 import az.jefsr.crypto.fixtures.FSFixture;
 import az.jefsr.crypto.fixtures.FSParanoid;
@@ -29,35 +29,15 @@ public class AesKeyCreatorTest {
 		Key k = keyCreator.createUserKey(fsParanoid.getUserPassword(), fsParanoid.getConfig());
 		assertThat(k, equalTo(referenceKey));
 	}
-
-	@Test
-	public void testCreateVolumeKey() throws CipherConfigException, IOException {
-		Config config = fsParanoid.getConfig();
-		byte[] b64Decoded = Base64.decode(config.getEncodedKeyData());
-		byte[] decodedWoutChecksum = Arrays.copyOfRange(b64Decoded, AesCoder.KEY_CHECKSUM_BYTES, b64Decoded.length);
-		Coder nullCoder = new NullCoder(null, null);
-		Key k = keyCreator.createVolumeKey(nullCoder, config);
-		int keyBytes = config.getKeySize() / 8;
-		Key nullCoderKey = new Key(Arrays.copyOf(decodedWoutChecksum, keyBytes), Arrays.copyOfRange(decodedWoutChecksum, keyBytes, keyBytes + AesCoder.MAX_IVEC_BYTES));
-		assertThat(k, equalTo(nullCoderKey));
-	}
 	
-	@Test
-	public void testChecksumDeserialization() throws CipherConfigException, IOException {
+	@Test(expected=CipherConfigException.class)
+	public void testChecksumVerification() throws CipherConfigException, IOException {
 		Config config = new FSParanoid().getConfig();
 		byte[] buf = Base64.decode(config.getEncodedKeyData());
-		buf[0] = (byte) 0xa1;
-		buf[1] = (byte) 0xb2;
-		buf[2] = (byte) 0xc3;
-		buf[3] = (byte) 0xd4;
+		buf[0] += 0xbad;
 		config.setEncodedKeyData(new String(Base64.encodeBytes(buf)));
-		Coder nullCoder = new NullCoder(fsParanoid.getUserKey(), null) {
-			public byte[] decodeStream(byte[] stream, long iv) {
-				assertThat(iv, equalTo(0x00000000a1b2c3d4L));
-				return stream;
-			}
-		};
-		keyCreator.createVolumeKey(nullCoder, config);
+		Coder coder = Coder.Factory.getInstance().createInstance(config.getCipherAlg().getName(), fsParanoid.getUserKey(), config);
+		keyCreator.createVolumeKey(coder, config);
 	}
 		
 	@Test

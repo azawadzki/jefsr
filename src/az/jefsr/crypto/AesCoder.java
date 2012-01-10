@@ -103,6 +103,10 @@ class AesCoder extends Coder {
 			} catch (CipherDataException e) {
 				throw new CipherConfigException("Volume config and key data inconsistent");
 			}
+			int checksum2 = MacUtils.mac32(deciphered, passwordCoder.getKey(), null);
+			if (checksum != checksum2) {
+				throw new CipherConfigException("Checksum error in decoded volume key!");
+			}
 			
 			byte[] keyBytes = Arrays.copyOf(deciphered, keyByteLen);
 			byte[] ivBytes = Arrays.copyOfRange(deciphered, keyByteLen, keyByteLen + MAX_IVEC_BYTES);
