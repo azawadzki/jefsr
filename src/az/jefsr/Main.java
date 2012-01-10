@@ -3,6 +3,7 @@ package az.jefsr;
 import java.io.FileNotFoundException;
 
 import az.jefsr.config.UnsupportedFormatException;
+import az.jefsr.crypto.CipherConfigException;
 import az.jefsr.crypto.CipherDataException;
 
 public class Main {
@@ -12,8 +13,9 @@ public class Main {
 	 * @throws FileNotFoundException 
 	 * @throws UnsupportedFormatException 
 	 * @throws CipherDataException 
+	 * @throws CipherConfigException 
 	 */
-	public static void main(String[] args) throws FileNotFoundException, UnsupportedFormatException, CipherDataException {
+	public static void main(String[] args) throws FileNotFoundException, UnsupportedFormatException, CipherDataException, CipherConfigException {
 		//Security.addProvider(new BouncyCastleProvider());
 		String file = "test-data/paranoid/.encfs6.xml";
     	String userPassword = "test";
