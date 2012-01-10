@@ -25,30 +25,17 @@ public class Volume {
 		config = ConfigReader.Factory.getInstance().createInstance(configTag).parse(in);
 	}
 	
-	public boolean init(String userPassword) {
+	public void init(String userPassword) throws CipherConfigException {
+		String cipherAlg = config.getCipherAlg().getName();
+		KeyCreator keyCreator = KeyCreator.Factory.getInstance().createInstance(cipherAlg);
+		Key userKey = keyCreator.createUserKey(userPassword, config);
 
-			String cipherAlg = config.getCipherAlg().getName();
-			KeyCreator keyCreator = KeyCreator.Factory.getInstance().createInstance(cipherAlg);
-			Key userKey;
-			try {
-				userKey = keyCreator.createUserKey(userPassword, config);
-			} catch (CipherConfigException e) {
-				return false;
-			}
-			Coder volumePswdCoder = Coder.Factory.getInstance().createInstance(cipherAlg, userKey, config);
-			Key volumeKey;
-			try {
-				volumeKey = keyCreator.createVolumeKey(volumePswdCoder, config);
-			} catch (CipherConfigException e) {
-				return false;
-			}
-			cryptoCoder = Coder.Factory.getInstance().createInstance(cipherAlg, volumeKey, config);
-			String nameAlg = config.getNameAlg().getName();
-			nameDecoder = NameDecoder.Factory.getInstance().createInstance(nameAlg, cryptoCoder, config);
-			// nameDecoder = new NullNameDecoder(cryptoCoder, config);
+		Coder volumePswdCoder = Coder.Factory.getInstance().createInstance(cipherAlg, userKey, config);
+		Key volumeKey = keyCreator.createVolumeKey(volumePswdCoder, config);
 
-			return true;
-
+		cryptoCoder = Coder.Factory.getInstance().createInstance(cipherAlg, volumeKey, config);
+		String nameAlg = config.getNameAlg().getName();
+		nameDecoder = NameDecoder.Factory.getInstance().createInstance(nameAlg, cryptoCoder, config);
 	}
 		
 	private String getRootFolderRelativePath(String cipheredPath) {
