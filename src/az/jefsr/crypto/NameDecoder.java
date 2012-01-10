@@ -1,5 +1,13 @@
 package az.jefsr.crypto;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 import az.jefsr.config.Config;
 import az.jefsr.util.FactoryBase;
 
@@ -12,20 +20,16 @@ public abstract class NameDecoder {
 	}
 	
 	public String decodePath(String path) throws CipherDataException {
-		String[] elements = path.split("/");
-		String output = "";
 		ChainedIv iv = null;
 		if (getConfig().getChainedNameIV()) {
 			iv = new ChainedIv();
 		}
-		for (String el: elements) {
-			if (el.isEmpty()) {
-				continue;
-			}
+		String output = "";
+		for (String el: getPathElements(path)) {
 			if (!output.isEmpty()) {
-				output += "/";
+				output += File.separator;
 			}
-			output += decodePathComponent(el, iv);
+			output += decodePathElements(el, iv);
 		}
 		return output;
 	}
@@ -38,8 +42,24 @@ public abstract class NameDecoder {
 		return config;
 	}
 	
-	protected abstract String decodePathComponent(String path, ChainedIv iv) throws CipherDataException;
+	protected abstract String decodePathElements(String path, ChainedIv iv) throws CipherDataException;
 
+	private List<String> getPathElements(String path) {
+		List<String> elems = new ArrayList<String>();
+		try {
+			String normalized = new URI(path).normalize().getPath();
+			elems.addAll(Arrays.asList(normalized.split(File.separator)));
+			for (Iterator<String> it = elems.iterator(); it.hasNext(); ) {
+			    if (it.next().isEmpty()) {
+			        it.remove();
+			    }
+			}
+		} catch (URISyntaxException e) {
+			// returning empty list is enough for error handling 
+		}
+		return elems;
+	}
+	
 	public static class Factory extends FactoryBase<NameDecoder> {
 		
 		static Factory instance = new Factory();

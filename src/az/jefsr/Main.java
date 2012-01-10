@@ -29,7 +29,7 @@ public class Main {
     			"7yp5rUju7WJz0HqxocaWPm9K"
     			*/
     			"pqW447x1v6JOeeyyr-pCswIe",
-    			"dJzawbcZtrPxVSJmvj,tf4rp/g9hJRg6V97eEtutYr8Zn-Eg5/yU,RRKp4frFbotJJt6tdl-oP"
+    			"/dJzawbcZtrPxVSJmvj,tf4rp////../dJzawbcZtrPxVSJmvj,tf4rp/./g9hJRg6V97eEtutYr8Zn-Eg5/yU,RRKp4frFbotJJt6tdl-oP"
     	};
     	for (String f: files) {
     		System.out.printf("%s\n%s\n--\n", f, v.decryptPath(f));
