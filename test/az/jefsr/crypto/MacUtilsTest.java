@@ -21,7 +21,7 @@ public class MacUtilsTest {
 		Key k1 = fsParanoid.getVolumeKey();
 		byte[] input1 = { 114, 101, 97, 100, 109, 101, 46, 116, 120, 116, 6, 6, 6, 6, 6, 6 };
 		long output1 = 444659516657715308L;
-		ChainedIV iv = new ChainedIV();
+		ChainedIv iv = new ChainedIv();
 		assertThat(MacUtils.mac64(input1, k1, iv), equalTo(output1));
 		assertThat(iv.value, equalTo(444659516657715308L));
 		
@@ -44,7 +44,7 @@ public class MacUtilsTest {
 		Key k = fsParanoid.getVolumeKey();
 		byte[] input = { 114, 101, 97, 100, 109, 101, 46, 116, 120, 116, 6, 6, 6, 6, 6, 6 };
 		int output = 35167;
-		ChainedIV iv = new ChainedIV();
+		ChainedIv iv = new ChainedIv();
 		assertThat(MacUtils.mac16(input, k, iv), equalTo(output));
 		assertThat(iv.value, equalTo(444659516657715308L));
 	}

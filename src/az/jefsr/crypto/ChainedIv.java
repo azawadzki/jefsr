@@ -1,5 +1,5 @@
 package az.jefsr.crypto;
 
-class ChainedIV {
+class ChainedIv {
 	public long value = 0;
 }

@@ -15,7 +15,7 @@ class BlockNameDecoder extends NameDecoder {
 	}
 
 	@Override
-	protected String decodePathComponent(String filename, ChainedIV seed) throws CipherDataException {
+	protected String decodePathComponent(String filename, ChainedIv seed) throws CipherDataException {
 		byte[] encFilenameData = decodeFilenameData(filename);
 		long mac = 0xffff & ByteBuffer.wrap(encFilenameData, 0, MAC_BYTES).asShortBuffer().get();
 		byte[] encFilename = Arrays.copyOfRange(encFilenameData, MAC_BYTES, encFilenameData.length);

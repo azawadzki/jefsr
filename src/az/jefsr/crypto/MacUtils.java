@@ -6,7 +6,7 @@ import java.nio.ByteOrder;
 import javax.crypto.Mac;
 public class MacUtils {
 
-	public static long mac64(byte[] data, Key k, ChainedIV chainedIv) {
+	public static long mac64(byte[] data, Key k, ChainedIv chainedIv) {
 		long tmp = MacUtils.checksum64(data, k, chainedIv);
 		if (chainedIv != null) {
 			chainedIv.value = tmp;
@@ -14,15 +14,15 @@ public class MacUtils {
 		return tmp;
 	}
 
-	private static long checksum64(byte[] data, Key k, ChainedIV chainedIV) {
+	private static long checksum64(byte[] data, Key k, ChainedIv chainedIv) {
 		Mac mac = k.getHMacCounter();
 		mac.reset();
 		mac.update(data);
 		
-		if (chainedIV != null) {
+		if (chainedIv != null) {
 			ByteBuffer bb = ByteBuffer.allocate(Long.SIZE / 8);
 			bb.order(ByteOrder.LITTLE_ENDIAN);
-			bb.putLong(chainedIV.value);
+			bb.putLong(chainedIv.value);
 			mac.update(bb.array());
 		}
 	
@@ -35,13 +35,13 @@ public class MacUtils {
 		return ByteBuffer.wrap(h).getLong();
 	}
 	
-	public static int mac32(byte[] data, Key k, ChainedIV chainedIv) {
+	public static int mac32(byte[] data, Key k, ChainedIv chainedIv) {
 		long m64 = mac64(data, k, chainedIv);
 		int m32 = (int) (((m64 >> 32) & 0xffffffff) ^ (m64 & 0xffffffff));
 		return m32;
 	}
 
-	public static int mac16(byte[] data, Key k, ChainedIV chainedIv) {
+	public static int mac16(byte[] data, Key k, ChainedIv chainedIv) {
 		int m32 = mac32(data, k, chainedIv);
 		int m16 = ((m32 >> 16) & 0xffff) ^ (m32 & 0xffff);
 		return m16;

@@ -14,7 +14,7 @@ public abstract class NameDecoder {
 	public String decodePath(String path) throws CipherDataException {
 		String[] elements = path.split("/");
 		String output = "";
-		ChainedIV seed = new ChainedIV();
+		ChainedIv seed = new ChainedIv();
 		for (String el: elements) {
 			System.out.printf("decoding: %s\n", el);
 			if (el.isEmpty()) {
@@ -36,7 +36,7 @@ public abstract class NameDecoder {
 		return config;
 	}
 	
-	protected abstract String decodePathComponent(String path, ChainedIV iv) throws CipherDataException;
+	protected abstract String decodePathComponent(String path, ChainedIv iv) throws CipherDataException;
 
 	public static class Factory extends FactoryBase<NameDecoder> {
 		
