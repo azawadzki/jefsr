@@ -4,19 +4,6 @@ import java.util.ArrayList;
 
 public class ByteEncoder {
 
-	// character set for ascii b64:
-	// ",-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	// a standard base64 (eg a64l doesn't use ',-' but uses './'.  We don't
-	// do that because '/' is a reserved character, and it is useful not to have
-	// '.' included in the encrypted names, so that it can be reserved for files
-	// with special meaning
-	
-	private static char[] B642AsciiTable;
-	static {
-		B642AsciiTable = ",-0123456789".toCharArray();
-	}
-	
-
 	private static char[] Ascii2B64Table;
 	static {
 		ByteEncoder.Ascii2B64Table =
@@ -78,22 +65,6 @@ public class ByteEncoder {
 			out[i] = ch;
 	    }
 	    return out;
-	}
-
-	public static void b64ToAscii(byte[] in) {
-	    for(int i=0; i < in.length; ++i) {
-			byte ch = in[i];
-			if (ch > 11)	{
-			    if (ch > 37) {
-			    	ch += 'a' - 38;
-			    } else {
-			    	ch += 'A' - 12;
-			    }
-			} else {
-			    ch = (byte) B642AsciiTable[ch];
-			}
-			in[i] = ch;
-	    }
 	}
 
 	public static int b64ToB256Bytes(int numB64Bytes) {
