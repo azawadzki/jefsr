@@ -1,6 +1,5 @@
 package az.jefsr;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -18,7 +17,6 @@ public class Volume {
 	
 	public Volume(String configFilePath) throws FileNotFoundException, UnsupportedFormatException {
 		config = ConfigReader.Factory.getInstance().createInstance(configFilePath).parse(configFilePath);
-		rootFolder = new File(configFilePath).getParent();
 	}
 	
 	public Volume(String configTag, InputStream in) throws UnsupportedFormatException {
@@ -37,23 +35,16 @@ public class Volume {
 		String nameAlg = config.getNameAlg().getName();
 		nameDecoder = NameDecoder.Factory.getInstance().createInstance(nameAlg, cryptoCoder, config);
 	}
-		
-	private String getRootFolderRelativePath(String cipheredPath) {
-		File f = new File(cipheredPath);
-		if (f.isAbsolute()) {
-			return cipheredPath.replaceFirst(String.format("^%s", rootFolder), "");
-		} else {
-			return cipheredPath;
-		}
+
+	public String decryptPath(String path) throws CipherDataException {
+		return nameDecoder.decodePath(path);
 	}
-	 
-	String decryptPath(String path) throws CipherDataException {
-		String cipheredRelPath = getRootFolderRelativePath(path);
-		return nameDecoder.decodePath(cipheredRelPath);
+	
+	public Config getConfig() {
+		return config;
 	}
 	
 	private Config config;
-	private String rootFolder = "";
 	private Coder cryptoCoder;
 	private NameDecoder nameDecoder;
 }
