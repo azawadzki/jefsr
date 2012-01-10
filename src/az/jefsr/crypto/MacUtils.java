@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import javax.crypto.Mac;
-
 public class MacUtils {
 
 	public static long mac64(byte[] data, Key k, ChainedIV chainedIv) {
@@ -15,7 +14,7 @@ public class MacUtils {
 		return tmp;
 	}
 
-	public static long checksum64(byte[] data, Key k, ChainedIV chainedIV) {
+	private static long checksum64(byte[] data, Key k, ChainedIV chainedIV) {
 		Mac mac = k.getHMacCounter();
 		mac.reset();
 		mac.update(data);
