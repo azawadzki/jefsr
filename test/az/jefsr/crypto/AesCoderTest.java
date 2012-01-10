@@ -1,9 +1,7 @@
 package az.jefsr.crypto;
 
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
-
-import java.util.Arrays;
+import static org.junit.Assert.assertThat;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

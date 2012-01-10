@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import net.iharder.base64.Base64;
 
