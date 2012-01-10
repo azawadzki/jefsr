@@ -1,6 +1,7 @@
 package az.jefsr.crypto;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 import java.util.Arrays;
 
@@ -24,7 +25,7 @@ public class AesCoderTest {
 		for (CoderFixture f: fsParanoid.getStreamTestVectors()) {
 			Coder coder = new AesCoder(f.getKey(), fsParanoid.getConfig());
 			byte[] out = coder.decodeStream(f.getInput(), f.getIv());
-			assertTrue(Arrays.equals(out, f.getOutput()));
+			assertThat(out, equalTo(f.getOutput()));
 		}
 	}   
 
@@ -33,7 +34,7 @@ public class AesCoderTest {
 		for (CoderFixture f: fsParanoid.getBlockTestVectors()) {
 			Coder coder = new AesCoder(f.getKey(), fsParanoid.getConfig());
 			byte[] out = coder.decodeBlock(f.getInput(), f.getIv());
-			assertTrue(Arrays.equals(out, f.getOutput()));
+			assertThat(out, equalTo(f.getOutput()));
 		}
 	}
 	
