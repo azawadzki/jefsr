@@ -14,16 +14,18 @@ public abstract class NameDecoder {
 	public String decodePath(String path) throws CipherDataException {
 		String[] elements = path.split("/");
 		String output = "";
-		ChainedIv seed = new ChainedIv();
+		ChainedIv iv = null;
+		if (getConfig().getChainedNameIV()) {
+			iv = new ChainedIv();
+		}
 		for (String el: elements) {
-			System.out.printf("decoding: %s\n", el);
 			if (el.isEmpty()) {
 				continue;
 			}
 			if (!output.isEmpty()) {
 				output += "/";
 			}
-			output += decodePathComponent(el, seed);
+			output += decodePathComponent(el, iv);
 		}
 		return output;
 	}

@@ -15,18 +15,26 @@ class BlockNameDecoder extends NameDecoder {
 	}
 
 	@Override
-	protected String decodePathComponent(String filename, ChainedIv seed) throws CipherDataException {
+	protected String decodePathComponent(String filename, ChainedIv iv) throws CipherDataException {
 		byte[] encFilenameData = decodeFilenameData(filename);
 		long mac = 0xffff & ByteBuffer.wrap(encFilenameData, 0, MAC_BYTES).asShortBuffer().get();
 		byte[] encFilename = Arrays.copyOfRange(encFilenameData, MAC_BYTES, encFilenameData.length);
-		long ivValue = seed.value ^ mac;
+		long seed = getUpdateIvSeed(iv, mac);
 
 		Coder coder = getCoder();
-		byte[] deciphered = coder.decodeBlock(encFilename, ivValue);
-		MacUtils.mac16(deciphered, coder.getKey(), seed);	
+		byte[] deciphered = coder.decodeBlock(encFilename, seed);
+		MacUtils.mac16(deciphered, coder.getKey(), iv);	
 		int finalSize = getDecipheredFilenameSize(filename, deciphered);
 		
 		return new String(Arrays.copyOfRange(deciphered, 0, finalSize));
+	}
+	
+	private long getUpdateIvSeed(ChainedIv iv, long mac) {
+		long currentIvValue = 0;
+		if (getConfig().getChainedNameIV()) {
+			currentIvValue = iv.value;
+		}
+		return currentIvValue ^ mac;
 	}
 	
 	private byte[] decodeFilenameData(byte[] data) {
