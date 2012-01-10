@@ -13,26 +13,22 @@ class BlockNameDecoder extends NameDecoder {
 	public BlockNameDecoder(Coder coder, Config config) {
 		super(coder, config);
 	}
-	
-	@Override	
-	public String decodePath(String path) throws CipherDataException {
 
-		String[] elements = path.split("/");
-		String output = "";
-		ChainedIV seed = new ChainedIV();
-		for (String el: elements) {
-			System.out.printf("decoding: %s\n", el);
-			if (el.isEmpty()) {
-				continue;
-			}
-			if (!output.isEmpty()) {
-				output += "/";
-			}
-			output += decryptFilename(el, seed);
-		}
-		return output;
+	@Override
+	protected String decodePathComponent(String filename, ChainedIV seed) throws CipherDataException {
+		byte[] encFilenameData = decodeFilenameData(filename);
+		long mac = 0xffff & ByteBuffer.wrap(encFilenameData, 0, MAC_BYTES).asShortBuffer().get();
+		byte[] encFilename = Arrays.copyOfRange(encFilenameData, MAC_BYTES, encFilenameData.length);
+		long ivValue = seed.value ^ mac;
+
+		Coder coder = getCoder();
+		byte[] deciphered = coder.decodeBlock(encFilename, ivValue);
+		MacUtils.mac16(deciphered, coder.getKey(), seed);	
+		int finalSize = getDecipheredFilenameSize(filename, deciphered);
+		
+		return new String(Arrays.copyOfRange(deciphered, 0, finalSize));
 	}
-
+	
 	private byte[] decodeFilenameData(byte[] data) {
 		return ByteEncoder.changeBase2(ByteEncoder.asciiToB64(data), 6, 8, false);
 	}
@@ -47,18 +43,4 @@ class BlockNameDecoder extends NameDecoder {
 		return decipheredStreamLen - padding;
 	}
 
-	private String decryptFilename(String filename, ChainedIV seed) throws CipherDataException {
-		byte[] encFilenameData = decodeFilenameData(filename);
-		long mac = 0xffff & ByteBuffer.wrap(encFilenameData, 0, MAC_BYTES).asShortBuffer().get();
-		byte[] encFilename = Arrays.copyOfRange(encFilenameData, MAC_BYTES, encFilenameData.length);
-		long ivValue = seed.value ^ mac;
-
-		Coder coder = getCoder();
-		byte[] deciphered = coder.decodeBlock(encFilename, ivValue);
-		MacUtils.mac16(deciphered, coder.getKey(), seed);	
-		int finalSize = getDecipheredFilenameSize(filename, deciphered);
-		
-		return new String(Arrays.copyOfRange(deciphered, 0, finalSize));
-	}
-	
 }

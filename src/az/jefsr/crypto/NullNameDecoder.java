@@ -9,7 +9,8 @@ public class NullNameDecoder extends NameDecoder {
 	}
 
 	@Override
-	public String decodePath(String path) {
+	protected String decodePathComponent(String path, ChainedIV iv)
+			throws CipherDataException {
 		return path;
 	}
 
