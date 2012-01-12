@@ -8,20 +8,23 @@ import org.junit.Test;
 
 import az.jefsr.config.Config;
 import az.jefsr.crypto.fixtures.FSFixture;
-import az.jefsr.crypto.fixtures.FSParanoid;
+import az.jefsr.crypto.fixtures.FSParanoidAes;
 
 public class BlockNameDecoderTest {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		fsFixture = new FSParanoid();
+		fsFixtureAes = new FSParanoidAes();
 	}
 
 	@Test
 	public void testDecodeCorrectPath() throws CipherConfigException, CipherDataException {
-		Config config = fsFixture.getConfig();
-		Coder coder = Coder.Factory.getInstance().createInstance(config.getCipherAlg().getName(), fsFixture.getVolumeKey(), config);
-		NameDecoder nameDec = NameDecoder.Factory.getInstance().createInstance(config.getNameAlg().getName(), coder, config);
+		Config config = fsFixtureAes.getConfig();
+		String algName = config.getCipherAlg().getName();
+		String nameAlg = config.getNameAlg().getName();
+		CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance().createInstance(algName);
+		Coder coder = new Coder(fsFixtureAes.getVolumeKey(), cipher, config);
+		NameDecoder nameDec = NameDecoderFactory.getInstance().createInstance(nameAlg, coder, config);
 		
 		String in1 = "7yp5rUju7WJz0HqxocaWPm9K";
 		String out1 = "readme.txt";
@@ -34,12 +37,16 @@ public class BlockNameDecoderTest {
 	
 	@Test(expected=CipherDataException.class)
 	public void testDecodeWrongPath() throws CipherDataException, CipherConfigException {
-		Config config = fsFixture.getConfig();
-		Coder coder = Coder.Factory.getInstance().createInstance(config.getCipherAlg().getName(), fsFixture.getVolumeKey(), config);
-		NameDecoder nameDec = NameDecoder.Factory.getInstance().createInstance(config.getNameAlg().getName(), coder, config);
+		Config config = fsFixtureAes.getConfig();
+		String algName = config.getCipherAlg().getName();
+		String nameAlg = config.getNameAlg().getName();
+		CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance().createInstance(algName);
+
+		Coder coder = new Coder(fsFixtureAes.getVolumeKey(), cipher, config);
+		NameDecoder nameDec = NameDecoderFactory.getInstance().createInstance(nameAlg, coder, config);
 		
 		nameDec.decodePath("dummy");
 	}
 	
-	static FSFixture fsFixture;
+	static FSFixture fsFixtureAes;
 }

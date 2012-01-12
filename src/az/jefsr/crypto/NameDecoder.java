@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import az.jefsr.config.Config;
-import az.jefsr.util.FactoryBase;
 
 
 public abstract class NameDecoder {
@@ -58,31 +57,6 @@ public abstract class NameDecoder {
 			// returning empty list is enough for error handling 
 		}
 		return elems;
-	}
-	
-	public static class Factory extends FactoryBase<NameDecoder> {
-		
-		static Factory instance = new Factory();
-		static {
-			NameDecoder.Factory.getInstance().registerType("nameio/block", BlockNameDecoder.class);
-			NameDecoder.Factory.getInstance().registerType("nameio/null", NullNameDecoder.class);
-		}	
-		public static Factory getInstance() {
-			return instance;
-		}
-		
-		public NameDecoder createInstance(String nameAlg, Coder coder, Config config) {
-			NameDecoder ret = null;
-			Class<? extends NameDecoder> cls = fetchType(nameAlg);
-			try {
-				Class<?>[] ctrArgs = { Coder.class, Config.class };
-				ret = cls.getConstructor(ctrArgs).newInstance(coder, config);
-			} catch (Throwable e) {
-				throw new RuntimeException(e);
-			}
-			return ret;	
-		}
-		
 	}
 	
 	private Coder coder;
