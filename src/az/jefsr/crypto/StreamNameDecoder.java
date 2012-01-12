@@ -25,8 +25,10 @@ public class StreamNameDecoder extends NameDecoder {
 		System.out.printf("mac: %d\n", mac);
 		Coder coder = getCoder();
 		byte[] deciphered = coder.decodeStream(encFilename, seed);
-		// TODO: check mac
-		MacUtils.mac16(deciphered, coder.getKey(), iv);	
+		int mac2 = MacUtils.mac16(deciphered, coder.getKey(), iv);
+		if (mac != mac2) {
+			throw new CipherDataException("Checksum error in decoded path element!");
+		}
 		int finalSize = getDecipheredFilenameSize(filename);
 		
 		return new String(Arrays.copyOfRange(deciphered, 0, finalSize));

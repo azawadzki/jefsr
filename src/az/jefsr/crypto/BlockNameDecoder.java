@@ -23,7 +23,10 @@ class BlockNameDecoder extends NameDecoder {
 
 		Coder coder = getCoder();
 		byte[] deciphered = coder.decodeBlock(encFilename, seed);
-		MacUtils.mac16(deciphered, coder.getKey(), iv);	
+		int mac2 = MacUtils.mac16(deciphered, coder.getKey(), iv);
+		if (mac != mac2) {
+			throw new CipherDataException("Checksum error in decoded path element!");
+		}
 		int finalSize = getDecipheredFilenameSize(filename, deciphered);
 		
 		return new String(Arrays.copyOfRange(deciphered, 0, finalSize));
