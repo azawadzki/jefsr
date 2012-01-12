@@ -8,6 +8,7 @@ public class CipherAlgorithmFactory extends FactoryBase<CipherAlgorithm> {
 	static {
 		CipherAlgorithmFactory.getInstance().registerType("ssl/aes", AesCipher.class);
 		CipherAlgorithmFactory.getInstance().registerType("ssl/blowfish", BlowfishCipher.class);
+		CipherAlgorithmFactory.getInstance().registerType("nullCipher", NullCipher.class);
 	}	
 	public static CipherAlgorithmFactory getInstance() {
 		return instance;
