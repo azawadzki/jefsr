@@ -7,9 +7,9 @@ public class CoderFactory extends FactoryBase<Coder> {
 
 	static CoderFactory instance = new CoderFactory();
 	static {
-		CoderFactory.getInstance().registerType("AES", BaseCoder.class);
-		CoderFactory.getInstance().registerType("Blowfish", BaseCoder.class);
-		CoderFactory.getInstance().registerType("NULL", NullCoder.class);
+		CoderFactory.getInstance().registerType(AesCipher.NAME, BaseCoder.class);
+		CoderFactory.getInstance().registerType(BlowfishCipher.NAME, BaseCoder.class);
+		CoderFactory.getInstance().registerType(NullCipher.NAME, NullCoder.class);
 	}	
 	public static CoderFactory getInstance() {
 		return instance;
