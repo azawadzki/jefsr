@@ -6,25 +6,28 @@ import java.util.Arrays;
 import az.jefsr.config.Config;
 import az.jefsr.util.ByteEncoder;
 
-class BlockNameDecoder extends NameDecoder {
+public class StreamNameDecoder extends NameDecoder {
 
 	final private static int MAC_BYTES = 2;
 	
-	public BlockNameDecoder(Coder coder, Config config) {
+	public StreamNameDecoder(Coder coder, Config config) {
 		super(coder, config);
 	}
 
+	//TODO: support older versions
 	@Override
 	protected String decodePathElements(String filename, ChainedIv iv) throws CipherDataException {
 		byte[] encFilenameData = decodeFilenameData(filename);
 		long mac = 0xffff & ByteBuffer.wrap(encFilenameData, 0, MAC_BYTES).asShortBuffer().get();
 		byte[] encFilename = Arrays.copyOfRange(encFilenameData, MAC_BYTES, encFilenameData.length);
 		long seed = getUpdateIvSeed(iv, mac);
-
+		
+		System.out.printf("mac: %d\n", mac);
 		Coder coder = getCoder();
-		byte[] deciphered = coder.decodeBlock(encFilename, seed);
+		byte[] deciphered = coder.decodeStream(encFilename, seed);
+		// TODO: check mac
 		MacUtils.mac16(deciphered, coder.getKey(), iv);	
-		int finalSize = getDecipheredFilenameSize(filename, deciphered);
+		int finalSize = getDecipheredFilenameSize(filename);
 		
 		return new String(Arrays.copyOfRange(deciphered, 0, finalSize));
 	}
@@ -42,10 +45,7 @@ class BlockNameDecoder extends NameDecoder {
 		return ByteEncoder.changeBase2(ByteEncoder.asciiToB64(data), 6, 8, false);
 	}
 
-	private int getDecipheredFilenameSize(String filename, byte[] decipheredData) {
-		int decipheredStreamLen = ByteEncoder.b64ToB256Bytes(filename.length()) - MAC_BYTES;
-		int padding = decipheredData[decipheredStreamLen - 1];
-		return decipheredStreamLen - padding;
+	private int getDecipheredFilenameSize(String filename) {
+		return ByteEncoder.b64ToB256Bytes(filename.length()) - MAC_BYTES;
 	}
-
 }

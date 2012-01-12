@@ -8,6 +8,7 @@ public class NameDecoderFactory extends FactoryBase<NameDecoder> {
 	static NameDecoderFactory instance = new NameDecoderFactory();
 	static {
 		NameDecoderFactory.getInstance().registerType("nameio/block", BlockNameDecoder.class);
+		NameDecoderFactory.getInstance().registerType("nameio/stream", StreamNameDecoder.class);
 		NameDecoderFactory.getInstance().registerType("nameio/null", NullNameDecoder.class);
 	}	
 	public static NameDecoderFactory getInstance() {
