@@ -23,7 +23,7 @@ public class BlockNameDecoderTest {
 		String algName = config.getCipherAlg().getName();
 		String nameAlg = config.getNameAlg().getName();
 		CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance().createInstance(algName);
-		Coder coder = new Coder(fsFixtureAes.getVolumeKey(), cipher, config);
+		Coder coder = CoderFactory.getInstance().createInstance(fsFixtureAes.getVolumeKey(), cipher, config);
 		NameDecoder nameDec = NameDecoderFactory.getInstance().createInstance(nameAlg, coder, config);
 		
 		String in1 = "7yp5rUju7WJz0HqxocaWPm9K";
@@ -42,7 +42,7 @@ public class BlockNameDecoderTest {
 		String nameAlg = config.getNameAlg().getName();
 		CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance().createInstance(algName);
 
-		Coder coder = new Coder(fsFixtureAes.getVolumeKey(), cipher, config);
+		Coder coder = CoderFactory.getInstance().createInstance(fsFixtureAes.getVolumeKey(), cipher, config);
 		NameDecoder nameDec = NameDecoderFactory.getInstance().createInstance(nameAlg, coder, config);
 		
 		nameDec.decodePath("dummy");

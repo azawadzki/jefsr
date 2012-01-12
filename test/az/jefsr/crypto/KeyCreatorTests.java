@@ -49,7 +49,7 @@ public class KeyCreatorTests {
 		config.setEncodedKeyData(new String(Base64.encodeBytes(buf)));
 		CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance().createInstance(config.getCipherAlg().getName());
 
-		Coder coder = new Coder(fix.getUserKey(), cipher, config);
+		Coder coder = CoderFactory.getInstance().createInstance(fix.getUserKey(), cipher, config);
 		KeyCreator keyCreator = new KeyCreator(cipher, config);
 		keyCreator.createVolumeKey(coder);
 	}
@@ -59,7 +59,7 @@ public class KeyCreatorTests {
 		for (FSFixture fix: fsFixtures) {
 			Config config = fix.getConfig();		
 			CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance().createInstance(config.getCipherAlg().getName());
-			Coder coder = new Coder(fix.getUserKey(), cipher, config);
+			Coder coder = CoderFactory.getInstance().createInstance(fix.getUserKey(), cipher, config);
 			KeyCreator keyCreator = new KeyCreator(cipher, config);
 			Key k = keyCreator.createVolumeKey(coder);
 			Key referenceKey = fix.getVolumeKey();

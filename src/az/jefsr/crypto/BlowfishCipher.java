@@ -1,10 +1,12 @@
 package az.jefsr.crypto;
 
-public class BlowfishCipher implements CipherAlgorithm {
+class BlowfishCipher implements CipherAlgorithm {
+	
+	static final public String NAME = "Blowfish";
 
 	@Override
 	public String getName() {
-		return "Blowfish";
+		return NAME;
 	}
 
 	@Override

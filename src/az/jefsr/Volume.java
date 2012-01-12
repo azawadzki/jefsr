@@ -11,6 +11,7 @@ import az.jefsr.crypto.CipherAlgorithmFactory;
 import az.jefsr.crypto.CipherConfigException;
 import az.jefsr.crypto.CipherDataException;
 import az.jefsr.crypto.Coder;
+import az.jefsr.crypto.CoderFactory;
 import az.jefsr.crypto.NameDecoderFactory;
 import az.jefsr.crypto.KeyCreator;
 import az.jefsr.crypto.Key;
@@ -31,10 +32,10 @@ public class Volume {
 		KeyCreator keyCreator = new KeyCreator(cipher, config);
 		Key userKey = keyCreator.createUserKey(userPassword);
 
-		Coder volumePswdCoder = new Coder(userKey, cipher, config);
+		Coder volumePswdCoder = CoderFactory.getInstance().createInstance(userKey, cipher, config);
 		Key volumeKey = keyCreator.createVolumeKey(volumePswdCoder);
 
-		cryptoCoder = new Coder(volumeKey, cipher, config);
+		cryptoCoder = CoderFactory.getInstance().createInstance(volumeKey, cipher, config);
 		String nameAlg = config.getNameAlg().getName();
 		nameDecoder = NameDecoderFactory.getInstance().createInstance(nameAlg, cryptoCoder, config);
 	}

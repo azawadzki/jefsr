@@ -36,7 +36,7 @@ public class CodersTests {
 		for (CoderFixture f: fsFixture.getStreamTestVectors()) {
 			Config config = fsFixture.getConfig();
 			CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance().createInstance(config.getCipherAlg().getName());
-			Coder coder = new Coder(f.getKey(), cipher, config);
+			Coder coder = CoderFactory.getInstance().createInstance(f.getKey(), cipher, config);
 			byte[] out = coder.decodeStream(f.getInput(), f.getIv());
 			assertThat(out, equalTo(f.getOutput()));
 		}
@@ -53,7 +53,7 @@ public class CodersTests {
 		for (CoderFixture f: fsFixture.getBlockTestVectors()) {
 			Config config = fsFixture.getConfig();
 			CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance().createInstance(config.getCipherAlg().getName());
-			Coder coder = new Coder(f.getKey(), cipher, config);
+			Coder coder = CoderFactory.getInstance().createInstance(f.getKey(), cipher, config);
 			byte[] out = coder.decodeBlock(f.getInput(), f.getIv());
 			assertThat(out, equalTo(f.getOutput()));
 		}

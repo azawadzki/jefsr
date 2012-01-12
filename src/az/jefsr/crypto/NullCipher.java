@@ -1,9 +1,9 @@
 package az.jefsr.crypto;
 
-class AesCipher implements CipherAlgorithm {
+class NullCipher implements CipherAlgorithm {
 
-	static final public String NAME = "AES";
-
+	static final public String NAME = "NULL";
+	
 	@Override
 	public String getName() {
 		return NAME;
@@ -11,22 +11,22 @@ class AesCipher implements CipherAlgorithm {
 
 	@Override
 	public int getChecksumBytesNumber() {
-		return 4;
+		return 0;
 	}
 
 	@Override
 	public int getIvecByteLength() {
-		return 16;
+		return 0;
 	}
 
 	@Override
 	public String getStreamAlgorithmName() {
-		return "AES/CFB/NoPadding";
+		return "NULL";
 	}
 
 	@Override
 	public String getBlockAlgorithmName() {
-		return "AES/CBC/NoPadding";
+		return "NULL";
 	}
 
 }
