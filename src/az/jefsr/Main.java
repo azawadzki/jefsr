@@ -46,8 +46,8 @@ public class Main {
     			//"Q0QK/fviHq0/EnshWB9WI1"
     			
     			//standard
-    			//"emWH3lhzE1a6W0ZwVQw6EbM0",
-    			//"eSP1eCF1HVHgocrYKyit2nsU/S6-Zg,4Nto0febpMZg-OtG4w/WquaQqMP9N5bl-qcwgXz,9rq"
+    			"emWH3lhzE1a6W0ZwVQw6EbM0",
+    			"eSP1eCF1HVHgocrYKyit2nsU/S6-Zg,4Nto0febpMZg-OtG4w/WquaQqMP9N5bl-qcwgXz,9rq"
     			
     	};
     	for (String f: files) {
