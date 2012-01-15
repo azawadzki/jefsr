@@ -3,6 +3,8 @@ package az.jefsr.crypto;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -30,8 +32,8 @@ public class BlockNameDecoderTest {
 		String out1 = "readme.txt";
 		assertThat(nameDec.decodePath(in1), equalTo(out1));
 		
-		String in2 = "YKGAxrfWfbxeek7,t-L35lZN/TTUy3UG3HqBkN5cOTP,s0PLf/PBU6Fr0tBITS53aZLnmNQJL7";
-		String out2 = "1/2b/3.txt";
+		String in2 = "YKGAxrfWfbxeek7,t-L35lZN" + File.separator + "TTUy3UG3HqBkN5cOTP,s0PLf" + File.separator + "PBU6Fr0tBITS53aZLnmNQJL7";
+		String out2 = "1" + File.separator + "2b" + File.separator + "3.txt";
 		assertThat(nameDec.decodePath(in2), equalTo(out2));
 	}
 	

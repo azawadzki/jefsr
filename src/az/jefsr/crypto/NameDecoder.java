@@ -46,14 +46,16 @@ public abstract class NameDecoder {
 	private List<String> getPathElements(String path) {
 		List<String> elems = new ArrayList<String>();
 		try {
-			String normalized = new URI(path).normalize().getPath();
-			elems.addAll(Arrays.asList(normalized.split(File.separator)));
+			String onlySlashes = path.replace("\\", "/");
+			String normalized = new URI(onlySlashes).normalize().getPath();
+			elems.addAll(Arrays.asList(normalized.split("/")));
 			for (Iterator<String> it = elems.iterator(); it.hasNext(); ) {
 			    if (it.next().isEmpty()) {
 			        it.remove();
 			    }
 			}
 		} catch (URISyntaxException e) {
+			e.printStackTrace();
 			// returning empty list is enough for error handling 
 		}
 		return elems;
