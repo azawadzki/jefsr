@@ -19,6 +19,10 @@ public abstract class NameDecoder {
 	}
 	
 	public String decodePath(String path) throws CipherDataException {
+		return decodePathInfo(path).getDecryptedPath();
+	}
+	
+	public PathInfo decodePathInfo(String path) throws CipherDataException {
 		ChainedIv iv = null;
 		if (getConfig().getChainedNameIV()) {
 			iv = new ChainedIv();
@@ -30,9 +34,10 @@ public abstract class NameDecoder {
 			}
 			output += decodePathElements(el, iv);
 		}
-		return output;
+		long finalIv = iv == null ? 0 : iv.value;
+		return new PathInfo(path, output, finalIv);
 	}
-		
+	
 	public Coder getCoder() {
 		return coder;
 	}
