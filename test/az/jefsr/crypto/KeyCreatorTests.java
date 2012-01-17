@@ -16,14 +16,15 @@ import az.jefsr.config.Config;
 import az.jefsr.crypto.fixtures.FSFixture;
 import az.jefsr.crypto.fixtures.FSParanoidAes;
 import az.jefsr.crypto.fixtures.FSParanoidBlowfish;
+import az.jefsr.crypto.fixtures.FSStandard;
 
 public class KeyCreatorTests {
 
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-
 		fsFixtures = new ArrayList<FSFixture>();
+		fsFixtures.add(new FSStandard());
 		fsFixtures.add(new FSParanoidAes());
 		fsFixtures.add(new FSParanoidBlowfish());
 	}
