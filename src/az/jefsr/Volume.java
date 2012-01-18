@@ -20,6 +20,7 @@ import az.jefsr.file.FileDecoder;
 import az.jefsr.file.FileDecoderFactory;
 import az.jefsr.file.NameDecoder;
 import az.jefsr.file.NameDecoderFactory;
+import az.jefsr.file.PathInfo;
 
 public class Volume {
 	
@@ -49,7 +50,8 @@ public class Volume {
 	}
 	
 	public void decryptFile(String path, InputStream in, OutputStream out) throws CipherDataException, IOException {
-		FileDecoder decoder = FileDecoderFactory.getInstance().createInstance(in, path, cryptoCoder, config);
+		PathInfo pathInfo = nameDecoder.decodePathInfo(path);
+		FileDecoder decoder = FileDecoderFactory.getInstance().createInstance(in, pathInfo, cryptoCoder, config);
 		byte[] buf = new byte[config.getBlockSize()];
 		while (true) {
 			int read = decoder.read(buf);
