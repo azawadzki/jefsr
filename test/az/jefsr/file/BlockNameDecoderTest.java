@@ -1,4 +1,4 @@
-package az.jefsr.crypto;
+package az.jefsr.file;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -9,6 +9,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import az.jefsr.config.Config;
+import az.jefsr.crypto.CipherAlgorithm;
+import az.jefsr.crypto.CipherAlgorithmFactory;
+import az.jefsr.crypto.CipherConfigException;
+import az.jefsr.crypto.CipherDataException;
+import az.jefsr.crypto.Coder;
+import az.jefsr.crypto.CoderFactory;
 import az.jefsr.crypto.fixtures.FSFixture;
 import az.jefsr.crypto.fixtures.FSParanoidAes;
 import az.jefsr.file.NameDecoder;
