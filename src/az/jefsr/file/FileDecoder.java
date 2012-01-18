@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import az.jefsr.crypto.CipherDataException;
 
-interface FileDecoder {
+public interface FileDecoder {
 	
 	int read(byte[] buf) throws IOException, CipherDataException;
 

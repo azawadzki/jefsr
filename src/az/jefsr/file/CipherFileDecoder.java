@@ -9,7 +9,7 @@ import az.jefsr.crypto.CipherDataException;
 import az.jefsr.crypto.Coder;
 import az.jefsr.crypto.PathInfo;
 
-public class CipherFileDecoder extends BlockFileDecoder {
+class CipherFileDecoder extends BlockFileDecoder {
 
 	final static private int HEADER_LENGTH = 8;
 	

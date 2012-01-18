@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import az.jefsr.crypto.CipherDataException;
 
-public abstract class BlockFileDecoder implements FileDecoder {
+abstract class BlockFileDecoder implements FileDecoder {
 
 	BlockFileDecoder(FileDecoder in, int blockSize) {
 		this.in = in;

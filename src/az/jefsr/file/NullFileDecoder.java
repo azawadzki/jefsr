@@ -3,7 +3,7 @@ package az.jefsr.file;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class NullFileDecoder implements FileDecoder {
+class NullFileDecoder implements FileDecoder {
 
 	NullFileDecoder(InputStream in) {
 		this.in = in;
