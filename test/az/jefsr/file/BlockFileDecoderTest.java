@@ -14,8 +14,8 @@ import az.jefsr.crypto.CipherDataException;
 
 class BlockFileDecoderImpl extends BlockFileDecoder {
 
-	BlockFileDecoderImpl(FileDecoder in, int blockSize) {
-		super(in, blockSize);
+	BlockFileDecoderImpl(FileDecoder in, int blockSize, boolean holesAllowed) {
+		super(in, blockSize, holesAllowed);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class BlockFileDecoderTest {
 			input[i] = (byte) i;
 		}
 		ByteArrayInputStream ins = new ByteArrayInputStream(input);
-		BlockFileDecoder decoder = new BlockFileDecoderImpl(new NullFileDecoder(ins), decoderBlockSize);
+		BlockFileDecoder decoder = new BlockFileDecoderImpl(new NullFileDecoder(ins), decoderBlockSize, false);
 		int bytesRead;
 		int dstPos = 0;
 		byte[] buffer = new byte[readerBlockSize];

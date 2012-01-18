@@ -14,7 +14,7 @@ class CipherFileDecoder extends BlockFileDecoder {
 	final static private int HEADER_LENGTH = 8;
 	
 	CipherFileDecoder(FileDecoder in, PathInfo pathInfo, Coder coder, Config config) {
-		super(in, config.getBlockSize());
+		super(in, config.getBlockSize(), config.getAllowHoles());
 		this.pathInfo = pathInfo;
 		this.coder = coder;
 		this.config = config;
@@ -41,6 +41,9 @@ class CipherFileDecoder extends BlockFileDecoder {
 	
 	@Override
 	protected byte[] decodeBlock(long blockNum, byte[] in, int inputLen) throws CipherDataException {
+		if (isBlockAHole(in, inputLen)) {
+			return in;
+		}
 		long blockIv = blockNum ^ iv;
 		if (inputLen == getBlockSize()) {
 			return coder.decodeBlock(in, blockIv);

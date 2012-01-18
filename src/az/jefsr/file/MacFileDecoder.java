@@ -12,7 +12,7 @@ import az.jefsr.crypto.MacUtils;
 class MacFileDecoder extends BlockFileDecoder {
 
 	public MacFileDecoder(FileDecoder in, Coder coder, Config config) {
-		super(in, config.getBlockSize());
+		super(in, config.getBlockSize(), config.getAllowHoles());
 		this.coder = coder;
 		macBytes = config.getBlockMACBytes();
 		macRandBytes = config.getBlockMACRandBytes();
@@ -25,13 +25,16 @@ class MacFileDecoder extends BlockFileDecoder {
 		if (inputLen <= headerSize) {
 			throw new CipherDataException("No data in block found when performing MAC validation.");
 		}
-		long mac = ByteBuffer.wrap(in, 0, macBytes).order(ByteOrder.LITTLE_ENDIAN).getLong();
-		long checksum = MacUtils.mac64(Arrays.copyOfRange(in, macBytes, inputLen), coder.getKey(), null);
-		if (mac != checksum) {
-			throw new CipherDataException("MAC validation failed");
+		if (!isBlockAHole(in, inputLen)) {
+			long mac = ByteBuffer.wrap(in, 0, macBytes).order(ByteOrder.LITTLE_ENDIAN).getLong();
+			long checksum = MacUtils.mac64(Arrays.copyOfRange(in, macBytes, inputLen), coder.getKey(), null);
+			if (mac != checksum) {
+				throw new CipherDataException("MAC validation failed");
+			}
 		}
 		return Arrays.copyOfRange(in, headerSize, inputLen);
 	}
+
 
 	private Coder coder;
 	private int macBytes;

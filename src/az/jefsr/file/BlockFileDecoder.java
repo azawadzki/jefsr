@@ -6,13 +6,14 @@ import az.jefsr.crypto.CipherDataException;
 
 abstract class BlockFileDecoder implements FileDecoder {
 
-	BlockFileDecoder(FileDecoder in, int blockSize) {
+	BlockFileDecoder(FileDecoder in, int blockSize, boolean holesAllowed) {
 		this.in = in;
 		this.blockSize = blockSize;
 		cacheBuffer = new byte[blockSize];
 		inputBuffer = new byte[blockSize];
 		blocksRead = 0;
 		reachedInputEnd = false;
+		this.holesAllowed = holesAllowed;
 	}
 	
 	@Override
@@ -49,6 +50,19 @@ abstract class BlockFileDecoder implements FileDecoder {
 	
 	protected abstract byte[] decodeBlock(long blockNum, byte[] in, int inputLen) throws CipherDataException;
 	
+
+	protected boolean isBlockAHole(byte[] in, int inputLen) {
+		if (!holesAllowed) {
+			return false;
+		}
+		for (int i = 0; i < inputLen; ++i) {
+			if (in[i] != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	private int flushCached(byte[] buf) {
 		// flush as much as will fit into output buffer
 		final int toFlush = Math.min(bytesCached, buf.length);
@@ -83,4 +97,5 @@ abstract class BlockFileDecoder implements FileDecoder {
 	private int blockSize;
 	private long blocksRead;
 	private boolean reachedInputEnd;
+	private boolean holesAllowed;
 }
