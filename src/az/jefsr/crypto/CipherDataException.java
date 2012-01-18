@@ -4,19 +4,19 @@ public class CipherDataException extends CipherException {
 
 	private static final long serialVersionUID = 6981416200665979800L;
 
-	CipherDataException() {
+	public CipherDataException() {
 		super();
 	}
 	
-	CipherDataException(String message) {
+	public CipherDataException(String message) {
     	super(message);
     }
     
-	CipherDataException(String message, Throwable cause) {
+	public CipherDataException(String message, Throwable cause) {
     	super(message, cause);
     }
     
-	CipherDataException(Throwable cause) {
+	public CipherDataException(Throwable cause) {
     	super(cause);
     }
 }

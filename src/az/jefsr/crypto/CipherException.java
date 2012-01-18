@@ -4,19 +4,19 @@ public abstract class CipherException extends Exception {
 
 	private static final long serialVersionUID = -5427843236187604976L;
 	
-	CipherException() {
+	public CipherException() {
 		super();
 	}
 	
-    CipherException(String message) {
+    public CipherException(String message) {
     	super(message);
     }
     
-    CipherException(String message, Throwable cause) {
+    public CipherException(String message, Throwable cause) {
     	super(message, cause);
     }
     
-    CipherException(Throwable cause) {
+    public CipherException(Throwable cause) {
     	super(cause);
     }
 

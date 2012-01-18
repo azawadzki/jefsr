@@ -4,19 +4,19 @@ public class CipherConfigException extends CipherException {
 
 	private static final long serialVersionUID = 5201052454556319402L;
 
-	CipherConfigException() {
+	public CipherConfigException() {
 		super();
 	}
 	
-	CipherConfigException(String message) {
+	public CipherConfigException(String message) {
     	super(message);
     }
     
-	CipherConfigException(String message, Throwable cause) {
+	public CipherConfigException(String message, Throwable cause) {
     	super(message, cause);
     }
     
-	CipherConfigException(Throwable cause) {
+	public CipherConfigException(Throwable cause) {
     	super(cause);
     }
 }
