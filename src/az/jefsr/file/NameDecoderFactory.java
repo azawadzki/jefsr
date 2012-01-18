@@ -1,6 +1,7 @@
-package az.jefsr.crypto;
+package az.jefsr.file;
 
 import az.jefsr.config.Config;
+import az.jefsr.crypto.Coder;
 import az.jefsr.util.FactoryBase;
 
 public class NameDecoderFactory extends FactoryBase<NameDecoder> {

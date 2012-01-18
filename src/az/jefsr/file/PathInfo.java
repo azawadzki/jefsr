@@ -1,4 +1,4 @@
-package az.jefsr.crypto;
+package az.jefsr.file;
 
 public class PathInfo {
 

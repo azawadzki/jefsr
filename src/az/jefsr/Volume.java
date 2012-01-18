@@ -12,10 +12,10 @@ import az.jefsr.crypto.CipherConfigException;
 import az.jefsr.crypto.CipherDataException;
 import az.jefsr.crypto.Coder;
 import az.jefsr.crypto.CoderFactory;
-import az.jefsr.crypto.NameDecoderFactory;
 import az.jefsr.crypto.KeyCreator;
 import az.jefsr.crypto.Key;
-import az.jefsr.crypto.NameDecoder;
+import az.jefsr.file.NameDecoder;
+import az.jefsr.file.NameDecoderFactory;
 
 public class Volume {
 	

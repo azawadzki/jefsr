@@ -1,4 +1,4 @@
-package az.jefsr.crypto;
+package az.jefsr.file;
 
 import java.io.File;
 import java.net.URI;
@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import az.jefsr.config.Config;
+import az.jefsr.crypto.ChainedIv;
+import az.jefsr.crypto.CipherDataException;
+import az.jefsr.crypto.Coder;
 
 
 public abstract class NameDecoder {

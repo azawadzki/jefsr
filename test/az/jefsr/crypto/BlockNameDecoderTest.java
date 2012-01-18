@@ -11,6 +11,8 @@ import org.junit.Test;
 import az.jefsr.config.Config;
 import az.jefsr.crypto.fixtures.FSFixture;
 import az.jefsr.crypto.fixtures.FSParanoidAes;
+import az.jefsr.file.NameDecoder;
+import az.jefsr.file.NameDecoderFactory;
 
 public class BlockNameDecoderTest {
 

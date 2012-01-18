@@ -7,7 +7,6 @@ import java.util.Arrays;
 import az.jefsr.config.Config;
 import az.jefsr.crypto.CipherDataException;
 import az.jefsr.crypto.Coder;
-import az.jefsr.crypto.PathInfo;
 
 class CipherFileDecoder extends BlockFileDecoder {
 
