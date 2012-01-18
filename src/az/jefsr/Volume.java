@@ -1,7 +1,9 @@
 package az.jefsr;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import az.jefsr.config.Config;
 import az.jefsr.config.ConfigReader;
@@ -14,6 +16,8 @@ import az.jefsr.crypto.Coder;
 import az.jefsr.crypto.CoderFactory;
 import az.jefsr.crypto.KeyCreator;
 import az.jefsr.crypto.Key;
+import az.jefsr.file.FileDecoder;
+import az.jefsr.file.FileDecoderFactory;
 import az.jefsr.file.NameDecoder;
 import az.jefsr.file.NameDecoderFactory;
 
@@ -42,6 +46,18 @@ public class Volume {
 
 	public String decryptPath(String path) throws CipherDataException {
 		return nameDecoder.decodePath(path);
+	}
+	
+	public void decryptFile(String path, InputStream in, OutputStream out) throws CipherDataException, IOException {
+		FileDecoder decoder = FileDecoderFactory.getInstance().createInstance(in, path, cryptoCoder, config);
+		byte[] buf = new byte[config.getBlockSize()];
+		while (true) {
+			int read = decoder.read(buf);
+			if (read == -1) {
+				break;
+			}
+			out.write(buf, 0, read);
+		}
 	}
 	
 	public Config getConfig() {
