@@ -29,12 +29,13 @@ class CipherFileDecoder extends BlockFileDecoder {
 		return super.read(buf);
 	}
 	
-	private void readHeader() throws IOException, CipherDataException {
+	private void readHeader() throws CipherDataException, IOException {
 		byte[] buf = new byte[HEADER_LENGTH];
 		if (getInputDecoder().read(buf) != HEADER_LENGTH) {
-			throw new IOException("Input stream size too small");
+			throw new CipherDataException("Input stream size too small");
 		}
-		byte[] header = coder.decodeStream(buf, 0);
+		long externalIv = config.getExternalIVChaining() ? pathInfo.getIv() : 0;
+		byte[] header = coder.decodeStream(buf, externalIv);
 		iv = ByteBuffer.wrap(header).getLong();
 	}
 	
