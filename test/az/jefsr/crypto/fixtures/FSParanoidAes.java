@@ -33,7 +33,7 @@ public class FSParanoidAes extends FSFixture {
 
 	@Override
 	public String getConfigFilePath() {
-		return "config-files/paranoid/.encfs6.xml";
+		return "config_files/paranoid/.encfs6.xml";
 	}
 
 	@Override

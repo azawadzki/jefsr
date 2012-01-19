@@ -10,7 +10,7 @@ public class FSStandardExternalChaining extends FSStandard {
 
 	@Override
 	public String getConfigFilePath() {
-		return "config-files/standard_with_external_ivchaining/.encfs6.xml";
+		return "config_files/standard_with_external_ivchaining/.encfs6.xml";
 	}
 	
 	@Override

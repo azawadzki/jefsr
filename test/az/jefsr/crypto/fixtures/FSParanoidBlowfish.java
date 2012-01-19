@@ -34,7 +34,7 @@ public class FSParanoidBlowfish extends FSFixture {
 
 	@Override
 	public String getConfigFilePath() {
-		return "config-files/paranoid_with_blowfish/.encfs6.xml";
+		return "config_files/paranoid_with_blowfish/.encfs6.xml";
 	}
 
 	@Override

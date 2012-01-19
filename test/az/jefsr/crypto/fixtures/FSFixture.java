@@ -19,7 +19,7 @@ public abstract class FSFixture {
 	public abstract List<CoderFixture> getBlockTestVectors() throws CipherConfigException;
 	
 	protected FSFixture() {
-		String configPath = new File("test-data", getConfigFilePath()).getPath();
+		String configPath = new File("test_data", getConfigFilePath()).getPath();
 		try {
 			config = ConfigReader.Factory.getInstance().createInstance(configPath).parse(configPath);
 		} catch (Exception e) {
