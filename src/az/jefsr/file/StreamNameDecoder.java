@@ -26,7 +26,6 @@ public class StreamNameDecoder extends NameDecoder {
 		byte[] encFilename = Arrays.copyOfRange(encFilenameData, MAC_BYTES, encFilenameData.length);
 		long seed = getUpdateIvSeed(iv, mac);
 		
-		System.out.printf("mac: %d\n", mac);
 		Coder coder = getCoder();
 		byte[] deciphered = coder.decodeStream(encFilename, seed);
 		int mac2 = MacUtils.mac16(deciphered, coder.getKey(), iv);

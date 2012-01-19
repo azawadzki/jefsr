@@ -24,6 +24,22 @@ import az.jefsr.file.PathInfo;
 
 public class Volume {
 	
+	public static void main(String[] args) throws FileNotFoundException, UnsupportedFormatException, CipherDataException, CipherConfigException {
+		String config = "test_data/config_files/standard/.encfs6.xml";
+		String userPassword = "test";
+
+		Volume v = new Volume(config);
+		v.init(userPassword);
+
+		String[] files = {
+				"emWH3lhzE1a6W0ZwVQw6EbM0",
+				"eSP1eCF1HVHgocrYKyit2nsU/S6-Zg,4Nto0febpMZg-OtG4w/WquaQqMP9N5bl-qcwgXz,9rq" 			
+		};
+		for (String f: files) {
+			System.out.printf("%s\n%s\n--\n", f, v.decryptPath(f));
+		}
+
+	}
 	public Volume(String configFilePath) throws FileNotFoundException, UnsupportedFormatException {
 		config = ConfigReader.Factory.getInstance().createInstance(configFilePath).parse(configFilePath);
 	}

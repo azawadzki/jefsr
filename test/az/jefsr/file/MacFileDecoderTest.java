@@ -58,7 +58,6 @@ public class MacFileDecoderTest {
 			}
 			
 		} while (bytesRead != -1);
-		System.out.println(new String(outputBuffer, 0, dstPos));
 		assertThat(Arrays.copyOfRange(outputBuffer, 0, dstPos), equalTo(expectedOutput));
 	}
 

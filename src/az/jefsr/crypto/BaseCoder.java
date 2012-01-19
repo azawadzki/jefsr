@@ -15,7 +15,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import az.jefsr.Main;
 import az.jefsr.config.Config;
 
 class BaseCoder extends Coder {
@@ -40,26 +39,15 @@ class BaseCoder extends Coder {
 	public byte[] decodeStream(byte[] stream, long iv) throws CipherDataException {
 		try {		
 			byte[] iv1 = updateIv(iv + 1, getCipher().getIvecByteLength());
-			Main.print(iv1, "ivec");
 			streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), getCipher().getName()), new IvParameterSpec(iv1));
 			byte[] decipheredStep1 = streamCipher.doFinal(stream);
-			Main.print(decipheredStep1, "first stage");
 			unshuffle(decipheredStep1);
-			Main.print(decipheredStep1, "unshuffled");
-			
 			flip(decipheredStep1);
-			Main.print(decipheredStep1, "flipped");
 
 			byte[] iv2 = updateIv(iv, getCipher().getIvecByteLength());
-			Main.print(iv2, "ivec");
-
 			streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), getCipher().getName()), new IvParameterSpec(iv2));
 			byte[] decipheredStep2 = streamCipher.doFinal(decipheredStep1);
-			Main.print(decipheredStep2, "second stage");
-
 			unshuffle(decipheredStep2);
-			Main.print(decipheredStep1, "unshuffled2");
-
 			
 			return decipheredStep2;		
 		} catch (InvalidKeyException e) {

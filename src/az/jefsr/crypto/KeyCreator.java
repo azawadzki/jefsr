@@ -14,7 +14,6 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import net.iharder.base64.Base64;
-import az.jefsr.Main;
 import az.jefsr.config.Config;
 
 public class KeyCreator {
@@ -50,7 +49,6 @@ public class KeyCreator {
 			throw new CipherConfigException(e);
 
 		}
-		Main.print(secret.getEncoded(), "user key");
 		byte[] keyBytes = Arrays.copyOf(secret.getEncoded(), keyByteLen);
 		byte[] ivBytes = Arrays.copyOfRange(secret.getEncoded(), keyByteLen, keyByteLen + getCipher().getIvecByteLength());
 
