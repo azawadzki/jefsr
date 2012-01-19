@@ -8,6 +8,8 @@ import az.jefsr.crypto.Coder;
 
 public class FileDecoderFactory {
 	
+	private static FileDecoderFactory instance = new FileDecoderFactory();
+	
 	public static FileDecoderFactory getInstance() {
 		return instance;
 	}
@@ -25,6 +27,5 @@ public class FileDecoderFactory {
 		}
 		return decoder;
 	}
-	
-	private static FileDecoderFactory instance;
+
 }
