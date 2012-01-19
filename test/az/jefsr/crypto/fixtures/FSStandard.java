@@ -33,7 +33,7 @@ public class FSStandard extends FSFixture {
 
 	@Override
 	public String getConfigFilePath() {
-		return "standard/.encfs6.xml";
+		return "config-files/standard/.encfs6.xml";
 	}
 
 	@Override

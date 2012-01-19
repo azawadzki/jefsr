@@ -12,9 +12,9 @@ public class ConfigReaderTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		paranoidConfigFile = "test-data/paranoid/.encfs6.xml";
-		nonexistentConfigFile = "test-data/plaintext/.encfs6.xml";
-		unsupportedConfigFile = "test-data/plaintext/readme.txt";
+		paranoidConfigFile = "test-data/config-files/paranoid/.encfs6.xml";
+		nonexistentConfigFile = "dummy";
+		unsupportedConfigFile = "test-data/readme.txt";
 	}
 
 	@Test
