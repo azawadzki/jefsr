@@ -9,21 +9,14 @@ public class ByteEncoder {
 		ByteEncoder.Ascii2B64Table =
 	       "                                            01  23456789:;       ".toCharArray();
 	    //  0123456789 123456789 123456789 123456789 123456789 123456789 1234
-	    //  0         1         2         3         4         5         6
 	}
-	
-	// change between two powers of two, stored as the low bits of the bytes in the
-	// arrays.
-	// It is the caller's responsibility to make sure the output array is large
-	// enough.
+
 	public static byte[] changeBase2(byte[] src, int src2Pow, int dst2Pow, boolean outputPartialLastByte) {
 	    long work = 0;
-	    int workBits = 0; // number of bits left in the work buffer
+	    int workBits = 0;
 	    int mask = (1 << dst2Pow) - 1;
 	
 	    ArrayList<Byte> dst = new ArrayList<Byte>();
-	    // copy the new bits onto the high bits of the stream.
-	    // The bits that fall off the low end are the output bits.
 	    int srcIdx = 0;
 	    while(srcIdx != src.length) {
 			work |= ((long)(src[srcIdx++])) << workBits;
@@ -34,7 +27,6 @@ public class ByteEncoder {
 			    workBits -= dst2Pow;
 			}
 	    }
-	    // now, we could have a partial value left in the work buffer..
 	    if ((workBits != 0) && outputPartialLastByte) {
 	    	dst.add((byte)(work & mask));
 	    }

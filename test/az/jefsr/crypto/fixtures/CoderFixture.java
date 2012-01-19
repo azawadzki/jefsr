@@ -10,23 +10,23 @@ public class CoderFixture {
 		this.input = input;
 		this.output = output;
 	}
-	
+
 	public Key getKey() {
 		return key;
 	}
-	
+
 	public long getIv() {
 		return iv;
 	}
-	
+
 	public byte[] getInput() {
 		return input;
 	}
-	
+
 	public byte[] getOutput() {
 		return output;
 	}
-	
+
 	private Key key;
 	private long iv;
 	private byte[] input;

@@ -18,35 +18,46 @@ public class ConfigReaderTest {
 	}
 
 	@Test
-	public void testParsePath() throws FileNotFoundException, UnsupportedFormatException {
-		ConfigReader reader = ConfigReader.Factory.getInstance().createInstance(paranoidConfigFile);
+	public void testParsePath() throws FileNotFoundException,
+			UnsupportedFormatException {
+		ConfigReader reader = ConfigReader.Factory.getInstance()
+				.createInstance(paranoidConfigFile);
 		reader.parse(paranoidConfigFile);
 	}
 
 	@Test
-	public void testParseFile() throws FileNotFoundException, UnsupportedFormatException {
-		ConfigReader reader = ConfigReader.Factory.getInstance().createInstance(paranoidConfigFile);
+	public void testParseFile() throws FileNotFoundException,
+			UnsupportedFormatException {
+		ConfigReader reader = ConfigReader.Factory.getInstance()
+				.createInstance(paranoidConfigFile);
 		reader.parse(new File(paranoidConfigFile));
 	}
-	
+
 	@Test
-	public void testParseInputStream() throws FileNotFoundException, UnsupportedFormatException {
-		ConfigReader reader = ConfigReader.Factory.getInstance().createInstance(paranoidConfigFile);
-		reader.parse(new BufferedInputStream(new FileInputStream(paranoidConfigFile)));
+	public void testParseInputStream() throws FileNotFoundException,
+			UnsupportedFormatException {
+		ConfigReader reader = ConfigReader.Factory.getInstance()
+				.createInstance(paranoidConfigFile);
+		reader.parse(new BufferedInputStream(new FileInputStream(
+				paranoidConfigFile)));
 	}
-	
-	@Test(expected=FileNotFoundException.class)
-	public void testParseNonexistent() throws FileNotFoundException, UnsupportedFormatException {
-		ConfigReader reader = ConfigReader.Factory.getInstance().createInstance(nonexistentConfigFile);
+
+	@Test(expected = FileNotFoundException.class)
+	public void testParseNonexistent() throws FileNotFoundException,
+			UnsupportedFormatException {
+		ConfigReader reader = ConfigReader.Factory.getInstance()
+				.createInstance(nonexistentConfigFile);
 		reader.parse(nonexistentConfigFile);
 	}
-	
-	@Test(expected=UnsupportedFormatException.class)
-	public void testParseUnsupported() throws FileNotFoundException, UnsupportedFormatException {
-		ConfigReader reader = ConfigReader.Factory.getInstance().createInstance(unsupportedConfigFile);
+
+	@Test(expected = UnsupportedFormatException.class)
+	public void testParseUnsupported() throws FileNotFoundException,
+			UnsupportedFormatException {
+		ConfigReader reader = ConfigReader.Factory.getInstance()
+				.createInstance(unsupportedConfigFile);
 		reader.parse(unsupportedConfigFile);
 	}
-	
+
 	static String paranoidConfigFile;
 	static String nonexistentConfigFile;
 	static String unsupportedConfigFile;

@@ -28,26 +28,35 @@ public class MacFileDecoderTest {
 	}
 
 	@Test
-	public void testParanoidAes() throws CipherDataException, IOException, CipherConfigException {
-		byte[] input = { -49, 73, -69, -44, 8, -126, -28, 120, 71, 71, 113, -110, 77, -68, 5, 92, 18, -101, 82, 17, 115, 122, 41, 42, -55, -45, 1, -15, 64, -99, 37, 62 };
+	public void testParanoidAes() throws CipherDataException, IOException,
+			CipherConfigException {
+		byte[] input = { -49, 73, -69, -44, 8, -126, -28, 120, 71, 71, 113,
+				-110, 77, -68, 5, 92, 18, -101, 82, 17, 115, 122, 41, 42, -55,
+				-45, 1, -15, 64, -99, 37, 62 };
 		byte[] expectedOutput = "Test 1/2b/3.txt\n".getBytes();
 		byte[] outputBuffer = new byte[256];
-	
+
 		FSFixture fix = new FSParanoidAes();
 		Key volumeKey = fix.getVolumeKey();
 		Config config = fix.getConfig();
-		CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance().createInstance(config.getCipherAlg().getName());
-		Coder cryptoCoder = CoderFactory.getInstance().createInstance(volumeKey, cipher, config);
-		
+		CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance()
+				.createInstance(config.getCipherAlg().getName());
+		Coder cryptoCoder = CoderFactory.getInstance().createInstance(
+				volumeKey, cipher, config);
+
 		String nameAlg = config.getNameAlg().getName();
-		NameDecoder nameDecoder = NameDecoderFactory.getInstance().createInstance(nameAlg, cryptoCoder, config);
-		
-		PathInfo pathInfo = nameDecoder.decodePathInfo("YKGAxrfWfbxeek7,t-L35lZN/TTUy3UG3HqBkN5cOTP,s0PLf/PBU6Fr0tBITS53aZLnmNQJL7");
-		
+		NameDecoder nameDecoder = NameDecoderFactory.getInstance()
+				.createInstance(nameAlg, cryptoCoder, config);
+
+		PathInfo pathInfo = nameDecoder
+				.decodePathInfo("YKGAxrfWfbxeek7,t-L35lZN/TTUy3UG3HqBkN5cOTP,s0PLf/PBU6Fr0tBITS53aZLnmNQJL7");
+
 		ByteArrayInputStream ins = new ByteArrayInputStream(input);
-		FileDecoder fileDecipherer = new CipherFileDecoder(new NullFileDecoder(ins), pathInfo, cryptoCoder, config);
-		FileDecoder decoder = new MacFileDecoder(fileDecipherer, cryptoCoder, config);
-		
+		FileDecoder fileDecipherer = new CipherFileDecoder(new NullFileDecoder(
+				ins), pathInfo, cryptoCoder, config);
+		FileDecoder decoder = new MacFileDecoder(fileDecipherer, cryptoCoder,
+				config);
+
 		int bytesRead;
 		int dstPos = 0;
 		byte[] buffer = new byte[256];
@@ -56,9 +65,10 @@ public class MacFileDecoderTest {
 				System.arraycopy(buffer, 0, outputBuffer, dstPos, bytesRead);
 				dstPos += bytesRead;
 			}
-			
+
 		} while (bytesRead != -1);
-		assertThat(Arrays.copyOfRange(outputBuffer, 0, dstPos), equalTo(expectedOutput));
+		assertThat(Arrays.copyOfRange(outputBuffer, 0, dstPos),
+				equalTo(expectedOutput));
 	}
 
 }

@@ -21,7 +21,8 @@ public class KeyTest {
 	public void testEqualsObject() throws CipherConfigException {
 		Key k1 = fsParanoidAes.getUserKey();
 		Key k2 = fsParanoidAes.getVolumeKey();
-		assertFalse(Arrays.equals(k1.getBytes(), k2.getBytes()) && Arrays.equals(k1.getIv(), k2.getIv()));
+		assertFalse(Arrays.equals(k1.getBytes(), k2.getBytes())
+				&& Arrays.equals(k1.getIv(), k2.getIv()));
 		assertThat(k1, not(equalTo(k2)));
 		assertThat(k2, not(equalTo(k1)));
 		assertThat(k1, not(equalTo(null)));
@@ -34,7 +35,8 @@ public class KeyTest {
 	public void testHashCode() throws CipherConfigException {
 		Key k1 = fsParanoidAes.getUserKey();
 		Key k2 = fsParanoidAes.getVolumeKey();
-		assertFalse(Arrays.equals(k1.getBytes(), k2.getBytes()) && Arrays.equals(k1.getIv(), k2.getIv()));
+		assertFalse(Arrays.equals(k1.getBytes(), k2.getBytes())
+				&& Arrays.equals(k1.getIv(), k2.getIv()));
 		int k1h = k1.hashCode();
 		int k2h = k2.hashCode();
 		assertThat(k1h, not(equalTo(k2h)));
@@ -44,7 +46,7 @@ public class KeyTest {
 		assertThat(k1h, equalTo(k1.hashCode()));
 		assertThat(k2h, equalTo(k2.hashCode()));
 	}
-	
+
 	static FSFixture fsParanoidAes;
 
 }

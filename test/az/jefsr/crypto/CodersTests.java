@@ -27,39 +27,47 @@ public class CodersTests {
 	}
 
 	@Test
-	public void testDecodeStream() throws CipherConfigException, CipherDataException {
-		for (FSFixture fix: fsFixtures) {
+	public void testDecodeStream() throws CipherConfigException,
+			CipherDataException {
+		for (FSFixture fix : fsFixtures) {
 			performDecodeStreamTests(fix);
 		}
-	}   
+	}
 
-	private void performDecodeStreamTests(FSFixture fsFixture) throws CipherConfigException, CipherDataException {
-		for (CoderFixture f: fsFixture.getStreamTestVectors()) {
+	private void performDecodeStreamTests(FSFixture fsFixture)
+			throws CipherConfigException, CipherDataException {
+		for (CoderFixture f : fsFixture.getStreamTestVectors()) {
 			Config config = fsFixture.getConfig();
-			CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance().createInstance(config.getCipherAlg().getName());
-			Coder coder = CoderFactory.getInstance().createInstance(f.getKey(), cipher, config);
+			CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance()
+					.createInstance(config.getCipherAlg().getName());
+			Coder coder = CoderFactory.getInstance().createInstance(f.getKey(),
+					cipher, config);
 			byte[] out = coder.decodeStream(f.getInput(), f.getIv());
 			assertThat(out, equalTo(f.getOutput()));
 		}
 	}
-	
+
 	@Test
-	public void testDecodeBlock() throws CipherConfigException, CipherDataException {
-		for (FSFixture fix: fsFixtures) {
+	public void testDecodeBlock() throws CipherConfigException,
+			CipherDataException {
+		for (FSFixture fix : fsFixtures) {
 			performDecodeBlockTests(fix);
 		}
-	}   
+	}
 
-	private void performDecodeBlockTests(FSFixture fsFixture) throws CipherConfigException, CipherDataException {
-		for (CoderFixture f: fsFixture.getBlockTestVectors()) {
+	private void performDecodeBlockTests(FSFixture fsFixture)
+			throws CipherConfigException, CipherDataException {
+		for (CoderFixture f : fsFixture.getBlockTestVectors()) {
 			Config config = fsFixture.getConfig();
-			CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance().createInstance(config.getCipherAlg().getName());
-			Coder coder = CoderFactory.getInstance().createInstance(f.getKey(), cipher, config);
+			CipherAlgorithm cipher = CipherAlgorithmFactory.getInstance()
+					.createInstance(config.getCipherAlg().getName());
+			Coder coder = CoderFactory.getInstance().createInstance(f.getKey(),
+					cipher, config);
 			byte[] out = coder.decodeBlock(f.getInput(), f.getIv());
 			assertThat(out, equalTo(f.getOutput()));
 		}
 	}
-	
+
 	static List<FSFixture> fsFixtures;
 
 }

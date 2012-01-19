@@ -19,14 +19,18 @@ public class MacUtilsTest {
 	@Test
 	public void testMac64() throws CipherConfigException {
 		Key k1 = fsParanoidAes.getVolumeKey();
-		byte[] input1 = { 114, 101, 97, 100, 109, 101, 46, 116, 120, 116, 6, 6, 6, 6, 6, 6 };
+		byte[] input1 = { 114, 101, 97, 100, 109, 101, 46, 116, 120, 116, 6, 6,
+				6, 6, 6, 6 };
 		long output1 = 444659516657715308L;
 		ChainedIv iv = new ChainedIv();
 		assertThat(MacUtils.mac64(input1, k1, iv), equalTo(output1));
 		assertThat(iv.value, equalTo(444659516657715308L));
-		
+
 		Key k2 = fsParanoidAes.getUserKey();
-		byte[] input2 = { 50, -83, 119, -8, 117, 48, -83, 9, -124, -48, 111, 124, -102, 78, -7, 121, -73, 1, -79, 76, -51, -61, -92, -48, 74, 24, -12, -125, -39, 32, 87, 18, -52, 25, 96, -52, 75, -35, -36, -95, -108, 121, -51, 1, 43, 20, -77, -27, };
+		byte[] input2 = { 50, -83, 119, -8, 117, 48, -83, 9, -124, -48, 111,
+				124, -102, 78, -7, 121, -73, 1, -79, 76, -51, -61, -92, -48,
+				74, 24, -12, -125, -39, 32, 87, 18, -52, 25, 96, -52, 75, -35,
+				-36, -95, -108, 121, -51, 1, 43, 20, -77, -27, };
 		long output2 = -6238161955975967516L;
 		assertThat(MacUtils.mac64(input2, k2, null), equalTo(output2));
 	}
@@ -34,7 +38,10 @@ public class MacUtilsTest {
 	@Test
 	public void testMac32() throws CipherConfigException {
 		Key k = fsParanoidAes.getUserKey();
-		byte[] input = { 50, -83, 119, -8, 117, 48, -83, 9, -124, -48, 111, 124, -102, 78, -7, 121, -73, 1, -79, 76, -51, -61, -92, -48, 74, 24, -12, -125, -39, 32, 87, 18, -52, 25, 96, -52, 75, -35, -36, -95, -108, 121, -51, 1, 43, 20, -77, -27, };
+		byte[] input = { 50, -83, 119, -8, 117, 48, -83, 9, -124, -48, 111,
+				124, -102, 78, -7, 121, -73, 1, -79, 76, -51, -61, -92, -48,
+				74, 24, -12, -125, -39, 32, 87, 18, -52, 25, 96, -52, 75, -35,
+				-36, -95, -108, 121, -51, 1, 43, 20, -77, -27, };
 		int output = 1004524580;
 		assertThat(MacUtils.mac32(input, k, null), equalTo(output));
 	}
@@ -42,7 +49,8 @@ public class MacUtilsTest {
 	@Test
 	public void testMac16() throws CipherConfigException {
 		Key k = fsParanoidAes.getVolumeKey();
-		byte[] input = { 114, 101, 97, 100, 109, 101, 46, 116, 120, 116, 6, 6, 6, 6, 6, 6 };
+		byte[] input = { 114, 101, 97, 100, 109, 101, 46, 116, 120, 116, 6, 6,
+				6, 6, 6, 6 };
 		int output = 35167;
 		ChainedIv iv = new ChainedIv();
 		assertThat(MacUtils.mac16(input, k, iv), equalTo(output));
