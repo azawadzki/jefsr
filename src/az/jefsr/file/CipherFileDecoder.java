@@ -2,7 +2,6 @@ package az.jefsr.file;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import az.jefsr.config.Config;
 import az.jefsr.crypto.CipherDataException;
@@ -39,15 +38,16 @@ class CipherFileDecoder extends BlockFileDecoder {
 	}
 	
 	@Override
-	protected byte[] decodeBlock(long blockNum, byte[] in, int inputLen) throws CipherDataException {
-		if (isBlockAHole(in, inputLen)) {
-			return in;
+	protected int decodeBlock(long blockNum, byte[] in, int inputLength, byte[] out) throws CipherDataException {
+		if (isBlockAHole(in, inputLength)) {
+			System.arraycopy(in, 0, out, 0, inputLength);
+			return inputLength;
 		}
 		long blockIv = blockNum ^ iv;
-		if (inputLen == getBlockSize()) {
-			return coder.decodeBlock(in, blockIv);
+		if (inputLength == getBlockSize()) {
+			return coder.decodeBlock(in, inputLength, blockIv, out);
 		} else {
-			return coder.decodeStream(Arrays.copyOf(in, inputLen), blockIv);
+			return coder.decodeStream(in, inputLength, blockIv, out);
 		}
 	}
 
@@ -60,5 +60,4 @@ class CipherFileDecoder extends BlockFileDecoder {
 	private PathInfo pathInfo;
 	private Coder coder;
 	private Config config;
-
 }

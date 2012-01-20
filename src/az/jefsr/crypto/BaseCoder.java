@@ -12,6 +12,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -37,19 +38,30 @@ class BaseCoder extends Coder {
 
 	@Override
 	public byte[] decodeStream(byte[] stream, long iv) throws CipherDataException {
+		byte[] buf = new byte[stream.length];
+		int read = decodeStream(stream, stream.length, iv, buf);
+		if (read != buf.length) {
+			buf = Arrays.copyOf(buf, read);
+		}
+		return buf;
+	}
+
+	@Override
+	public int decodeStream(byte[] stream, int inputLength, long iv, byte[] output)
+			throws CipherDataException {
+		assert(output.length >= inputLength);
 		try {		
 			byte[] iv1 = updateIv(iv + 1, getCipher().getIvecByteLength());
 			streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), getCipher().getName()), new IvParameterSpec(iv1));
-			byte[] decipheredStep1 = streamCipher.doFinal(stream);
-			unshuffle(decipheredStep1);
-			flip(decipheredStep1);
+			int decipheredInStep1 = streamCipher.doFinal(stream, 0, inputLength, output);
+			unshuffle(output, decipheredInStep1);
+			flip(output, decipheredInStep1);
 
 			byte[] iv2 = updateIv(iv, getCipher().getIvecByteLength());
 			streamCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), getCipher().getName()), new IvParameterSpec(iv2));
-			byte[] decipheredStep2 = streamCipher.doFinal(decipheredStep1);
-			unshuffle(decipheredStep2);
-			
-			return decipheredStep2;		
+			int decipheredInStep2 = streamCipher.doFinal(output, 0, decipheredInStep1, output);
+			unshuffle(output, decipheredInStep2);
+			return decipheredInStep2;
 		} catch (InvalidKeyException e) {
 			// not a config error per se, as they should have been reported by KeyCreator already.
 			throw new CipherDataException("Volume key corrupted", e);
@@ -60,14 +72,28 @@ class BaseCoder extends Coder {
 			throw new CipherDataException(e);
 		} catch (BadPaddingException e) {
 			throw new CipherDataException(e);
+		} catch (ShortBufferException e) {
+			throw new CipherDataException("Incorrect buffer size for decrypted data", e);
 		}
 	}
 
+	@Override
 	public byte[] decodeBlock(byte[] block, long iv) throws CipherDataException {
+		byte[] buf = new byte[block.length];
+		int read = decodeBlock(block, block.length, iv, buf);
+		if (read != buf.length) {
+			buf = Arrays.copyOf(buf, read);
+		}
+		return buf;
+	}
+
+	@Override
+	public int decodeBlock(byte[] block, int inputLength, long iv, byte[] output) throws CipherDataException {
+		assert(output.length >= inputLength);
 		byte[] ivec = updateIv(iv, getCipher().getIvecByteLength());
 		try {
 			blockCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getKey().getBytes(), getCipher().getName()), new IvParameterSpec(ivec));
-			return blockCipher.doFinal(block);
+			return blockCipher.doFinal(block, 0, inputLength, output);
 		} catch (InvalidKeyException e) {
 			// not a config error per se, as they should have been reported by KeyCreator already
 			throw new CipherDataException("Volume key corrupted", e);
@@ -78,18 +104,20 @@ class BaseCoder extends Coder {
 			throw new CipherDataException(e);
 		} catch (BadPaddingException e) {
 			throw new CipherDataException(e);
+		} catch (ShortBufferException e) {
+			throw new CipherDataException("Incorrect buffer size for decrypted data", e);
 		}
 	}
 
-	private void unshuffle(byte[] buf) {
-		for (int i = buf.length - 1; i != 0; --i) {
+	private void unshuffle(byte[] buf, int length) {
+		for (int i = length - 1; i != 0; --i) {
 			buf[i] ^= buf[i - 1];
 		}
 	}
 	
-	private void flip(byte[] buf) {
+	private void flip(byte[] buf, int length) {
 		byte[] revBuf = new byte[64];
-		int bytesLeft = buf.length;
+		int bytesLeft = length;
 		int flipPos = 0;
 		while (bytesLeft != 0) {
 			int toFlip = Math.min(revBuf.length, bytesLeft);

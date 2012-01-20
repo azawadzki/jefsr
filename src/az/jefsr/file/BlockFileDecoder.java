@@ -11,6 +11,7 @@ abstract class BlockFileDecoder implements FileDecoder {
 		this.blockSize = blockSize;
 		cacheBuffer = new byte[blockSize];
 		inputBuffer = new byte[blockSize];
+		decodedBuffer = new byte[blockSize];
 		blocksRead = 0;
 		reachedInputEnd = false;
 		this.holesAllowed = holesAllowed;
@@ -34,21 +35,22 @@ abstract class BlockFileDecoder implements FileDecoder {
 					return dstPos != 0 ? dstPos : -1;
 				}
 			}
-			byte[] decoded = decodeBlock(blocksRead, inputBuffer, read);
-			int toWrite = Math.min(remainingBytes, decoded.length);
-			System.arraycopy(decoded, 0, buf, dstPos, toWrite);
+			int decodedBytes = decodeBlock(blocksRead, inputBuffer, read, decodedBuffer);
+			assert(read >= decodedBytes);
+			int toWrite = Math.min(remainingBytes, decodedBytes);
+			System.arraycopy(decodedBuffer, 0, buf, dstPos, toWrite);
 			remainingBytes -= toWrite;
 			dstPos += toWrite;
 			++blocksRead;
-			if (toWrite != decoded.length) {
-				cacheLeftovers(decoded, toWrite, decoded.length - toWrite);
+			if (toWrite != decodedBytes) {
+				cacheLeftovers(decodedBuffer, toWrite, decodedBytes - toWrite);
 				break;
 			} 
 		}
 		return dstPos;
 	}
 	
-	protected abstract byte[] decodeBlock(long blockNum, byte[] in, int inputLen) throws CipherDataException;
+	protected abstract int decodeBlock(long blockNum, byte[] in, int inputLen, byte[] output) throws CipherDataException;
 	
 
 	protected boolean isBlockAHole(byte[] in, int inputLen) {
@@ -93,6 +95,7 @@ abstract class BlockFileDecoder implements FileDecoder {
 	private int cachePos;
 	private int bytesCached;
 	private byte[] inputBuffer;
+	private byte[] decodedBuffer;
 	private FileDecoder in;
 	private int blockSize;
 	private long blocksRead;

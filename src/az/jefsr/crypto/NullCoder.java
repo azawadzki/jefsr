@@ -16,5 +16,19 @@ class NullCoder extends Coder {
 		return block;
 	}
 
+	@Override
+	public int decodeStream(byte[] stream, int inputLength, long iv, byte[] output)
+			throws CipherDataException {
+		System.arraycopy(stream, 0, output, 0, inputLength);
+		return inputLength;
+	}
+
+	@Override
+	public int decodeBlock(byte[] block, int inputLength, long iv,
+			byte[] output) throws CipherDataException {
+		System.arraycopy(block, 0, output, 0, inputLength);
+		return inputLength;
+	}
+
 }
 

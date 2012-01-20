@@ -11,8 +11,10 @@ public abstract class Coder {
 	}
 
 	public abstract byte[] decodeStream(byte[] stream, long iv) throws CipherDataException;
+	public abstract int decodeStream(byte[] stream, int inputLength, long iv, byte[] output) throws CipherDataException;
 	public abstract byte[] decodeBlock(byte[] block, long iv) throws CipherDataException;
-
+	public abstract int decodeBlock(byte[] block, int inputLength, long iv, byte[] output) throws CipherDataException;
+	
 	public Key getKey() {
 		return key;
 	}

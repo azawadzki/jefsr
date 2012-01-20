@@ -20,7 +20,7 @@ class MacFileDecoder extends BlockFileDecoder {
 	}
 
 	@Override
-	protected byte[] decodeBlock(long blockNum, byte[] in, int inputLen)
+	protected int decodeBlock(long blockNum, byte[] in, int inputLen, byte[] out)
 			throws CipherDataException {
 		if (inputLen <= headerSize) {
 			throw new CipherDataException("No data in block found when performing MAC validation.");
@@ -32,7 +32,9 @@ class MacFileDecoder extends BlockFileDecoder {
 				throw new CipherDataException("MAC validation failed");
 			}
 		}
-		return Arrays.copyOfRange(in, headerSize, inputLen);
+		int outputLen = inputLen - headerSize;
+		System.arraycopy(in, headerSize, out, 0, outputLen);
+		return outputLen;
 	}
 
 

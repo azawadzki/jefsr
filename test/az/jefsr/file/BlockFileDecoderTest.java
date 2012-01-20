@@ -5,7 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,9 +18,10 @@ class BlockFileDecoderImpl extends BlockFileDecoder {
 	}
 
 	@Override
-	protected byte[] decodeBlock(long blockNum, byte[] in, int inputLen)
+	protected int decodeBlock(long blockNum, byte[] in, int inputLen, byte[] out)
 			throws CipherDataException {
-		return Arrays.copyOf(in, inputLen);
+		System.arraycopy(in, 0, out, 0, inputLen);
+		return inputLen;
 	}
 
 }
