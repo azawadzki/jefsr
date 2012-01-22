@@ -16,6 +16,8 @@
  ******************************************************************************/
 package az.jefsr.file;
 
+/** PathInfo ties decrypted path, encrypted path and associated iv data, which is necessary in case of volumes using iv name chaining.
+ */
 public class PathInfo {
 
 	PathInfo(String encryptedPath, String decryptedPath, long iv) {

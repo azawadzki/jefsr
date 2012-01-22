@@ -16,6 +16,8 @@
  ******************************************************************************/
 package az.jefsr.config;
 
+/** Object containing EncFS volume configuration data. Currently, it mirrors the structure of .encfs6.xml file.
+ */
 public class Config {
 
 	public Config() {

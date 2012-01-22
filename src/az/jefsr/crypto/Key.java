@@ -23,6 +23,8 @@ import java.util.Arrays;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+/** Key object ties key data with corresponding iv.
+ */
 public class Key {
 
 	public Key(byte[] key, byte[] iv) throws CipherConfigException {

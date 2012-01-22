@@ -29,7 +29,6 @@ import az.jefsr.crypto.ChainedIv;
 import az.jefsr.crypto.CipherDataException;
 import az.jefsr.crypto.Coder;
 
-
 public abstract class NameDecoder {
 	
 	public NameDecoder(Coder coder, Config config) {
