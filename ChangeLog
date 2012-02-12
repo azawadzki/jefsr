@@ -1,2 +1,9 @@
-Jan. 19, 2012 Andrzej Zawadzki <azawadzki@gmail.com>
+Feb. 12, 2012 Andrzej Zawadzki <azawadzki@gmail.com>
+	* Provide list of supported configs to external clients
+	* Make sure that file decoder fills given buffer entirely in case the end
+	  of stream was not met yet.
+	* Added support for reading decrypted file by means of an InputStream
+
+Jan. 21, 2012 Andrzej Zawadzki <azawadzki@gmail.com>
 	* Initial version (tested against EncFS 1.7.4)
+
