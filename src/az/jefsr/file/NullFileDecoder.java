@@ -27,7 +27,16 @@ class NullFileDecoder implements FileDecoder {
 	
 	@Override
 	public int read(byte[] buf) throws IOException {
-		return in.read(buf);
+		int totalRead = 0;
+		do {
+			assert(totalRead < buf.length);
+			int read = in.read(buf, totalRead, buf.length - totalRead);
+			if (read == -1) {
+				break;
+			}
+			totalRead += read;
+		} while (totalRead != buf.length);
+		return (totalRead == 0) ? -1 : totalRead;
 	}
 	
 	private InputStream in;

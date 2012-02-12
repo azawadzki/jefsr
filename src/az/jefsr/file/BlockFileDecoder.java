@@ -107,6 +107,7 @@ abstract class BlockFileDecoder implements FileDecoder {
 	protected FileDecoder getInputDecoder() {
 		return in;
 	}
+
 	private byte[] cacheBuffer;
 	private int cachePos;
 	private int bytesCached;
