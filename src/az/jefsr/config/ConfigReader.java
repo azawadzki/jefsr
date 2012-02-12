@@ -21,7 +21,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Scanner;
+import java.util.Set;
 
 import az.jefsr.util.FactoryBase;
 
@@ -51,6 +53,10 @@ public abstract class ConfigReader {
 		}	
 		public static Factory getInstance() {
 			return instance;
+		}
+		
+		public Set<String> getSupportedConfigs() {
+			return Collections.unmodifiableSet(getRegisteredTypesMap().keySet());
 		}
 		
 		public ConfigReader createInstance(String configFile) {

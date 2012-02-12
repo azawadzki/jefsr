@@ -16,6 +16,7 @@
  ******************************************************************************/
 package az.jefsr.util;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,10 @@ public class FactoryBase<T> {
 
 	public Class<? extends T> fetchType(String token) {
 		return registeredTypes.get(token); 
+	}
+	
+	public Map<String, Class<? extends T>> getRegisteredTypesMap() {
+		return Collections.unmodifiableMap(registeredTypes);
 	}
 	
 	private Map<String, Class<? extends T>> registeredTypes = new HashMap<String, Class<? extends T>>();
