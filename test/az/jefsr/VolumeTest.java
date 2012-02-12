@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 
@@ -130,7 +131,7 @@ class VolumeCrawler {
 		}
 		validatePath(f);
 		validateContents(f);
-
+		validateContentsInputStream(f);
 	}
 
 	private void validateDirectory(File f) throws CipherDataException {
@@ -163,6 +164,36 @@ class VolumeCrawler {
 		byte[] refBuf = new byte[(int) ref.length()];
 		ref.readFully(refBuf);
 		if (!Arrays.equals(byteOut.toByteArray(), refBuf)) {
+			throw new CipherDataException(String.format(
+					"Error decoding %s (%s) contents.", f.getPath(),
+					decryptedName));
+		}
+	}
+
+	private void validateContentsInputStream(File f) throws CipherDataException,
+			IOException {
+		String intraVolumePath = f.getPath().replaceFirst(encryptedVolume, "");
+		FileInputStream fileStream = new FileInputStream(f.getPath());
+		BufferedInputStream bufStream = new BufferedInputStream(fileStream);
+		InputStream in = volume.getFileDecryptionStream(intraVolumePath, bufStream);
+		
+		ByteArrayOutputStream outBuf = new ByteArrayOutputStream();
+		while (true) {
+			int b = in.read();
+			if (b == -1) {
+				break;
+			}
+			outBuf.write(b);
+		}
+		outBuf.flush();
+		
+		String decryptedName = volume.decryptPath(intraVolumePath);
+		RandomAccessFile ref = new RandomAccessFile(new File(referenceDir,
+				decryptedName).getPath(), "r");
+		byte[] refBuf = new byte[(int) ref.length()];
+		ref.readFully(refBuf);
+		
+		if (!Arrays.equals(outBuf.toByteArray(), refBuf)) {
 			throw new CipherDataException(String.format(
 					"Error decoding %s (%s) contents.", f.getPath(),
 					decryptedName));

@@ -34,6 +34,7 @@ import az.jefsr.crypto.KeyCreator;
 import az.jefsr.crypto.Key;
 import az.jefsr.file.FileDecoder;
 import az.jefsr.file.FileDecoderFactory;
+import az.jefsr.file.FileDecoderInputStream;
 import az.jefsr.file.NameDecoder;
 import az.jefsr.file.NameDecoderFactory;
 import az.jefsr.file.PathInfo;
@@ -103,6 +104,8 @@ public class Volume {
 	/** Decrypt given file and write its contents to given output stream. Requires preceding init() invocation. 
 	 * Note that both input stream providing file data and file path (relative to encrypted FS root dir) are necessary.
 	 * @param path Encrypted path (both '/' and '\' are supported as path elements separators).
+	 * @param in input stream which provides encrypted data.
+	 * @param out output stream to which decrypted data is written.
 	 * @throws CipherDataException If an error occurred during deciphering.
 	 * @throws IOException If there were problems with I/O using the streams provided.
 	 */
@@ -119,6 +122,19 @@ public class Volume {
 		}
 	}
 	
+	/** Open stream which will provide decrypted file contents when being read. Requires preceding init() invocation.
+	 * The stream is buffered with current cipher bock size being the buffer size.
+	 * @param path Encrypted path (both '/' and '\' are supported as path elements separators).
+	 * @param in input stream which provides encrypted data.
+	 * @return Input stream which provides decrypted data fed through input stream.
+	 * @throws CipherDataException If an error occurred during deciphering.
+	 */
+	public InputStream getFileDecryptionStream(String path, InputStream in) throws CipherDataException {
+		PathInfo pathInfo = nameDecoder.decodePathInfo(path);
+		FileDecoder decoder = FileDecoderFactory.getInstance().createInstance(in, pathInfo, cryptoCoder, config);
+		return new FileDecoderInputStream(decoder, config);
+	}
+
 	/** Provide config information of the file system. This function does not require that init() is called beforehand.
 	 * @return Config object holding FS config.
 	 */
