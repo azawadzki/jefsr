@@ -19,9 +19,10 @@ package az.jefsr.crypto;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.util.Arrays;
 
 import javax.crypto.SecretKey;
@@ -31,6 +32,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import net.iharder.base64.Base64;
 import az.jefsr.config.Config;
+import az.jefsr.nativeext.PBKDF2;
 
 public class KeyCreator {
 	
@@ -48,27 +50,37 @@ public class KeyCreator {
 		}
 		int iterationCount = getConfig().getKdfIterations();
 		int keyLength = getConfig().getKeySize();
-		SecretKeyFactory factory;
-		try {
-			factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-		} catch (NoSuchAlgorithmException e) {
-			throw new CipherConfigException(e);
-		}
 
 		final int keyByteLen = keyLength / 8;
-		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterationCount, keyLength + getCipher().getIvecByteLength()*8);
+		PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterationCount, keyLength + getCipher().getIvecByteLength()*8);
 		SecretKey secret;
-		
 		try {
-			secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), getCipher().getName());
+			secret = new SecretKeySpec(createEncodedUserSecretKey(spec), getCipher().getName());
 		} catch (InvalidKeySpecException e) {
 			throw new CipherConfigException(e);
-
 		}
 		byte[] keyBytes = Arrays.copyOf(secret.getEncoded(), keyByteLen);
 		byte[] ivBytes = Arrays.copyOfRange(secret.getEncoded(), keyByteLen, keyByteLen + getCipher().getIvecByteLength());
 
 		return new Key(keyBytes, ivBytes);
+	}
+
+	byte[] createEncodedUserSecretKey(PBEKeySpec spec) throws InvalidKeySpecException, CipherConfigException {
+		try {
+			Charset utf8 = Charset.forName("UTF-8");
+			CharBuffer cb = CharBuffer.wrap(spec.getPassword());
+			byte[] password = utf8.encode(cb).array();
+			return PBKDF2.getInstance().deriveKey(password, spec.getSalt(), spec.getIterationCount(), spec.getKeyLength());
+		} catch (UnsatisfiedLinkError linkerError) {
+			// no native functionality provided, fall back to Java version...
+			SecretKeyFactory factory;
+			try {
+				factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+				return factory.generateSecret(spec).getEncoded();
+			} catch (NoSuchAlgorithmException e) {
+				throw new CipherConfigException(e);
+			}
+		}
 	}
 
 	public Key createVolumeKey(Coder passwordCoder) throws CipherConfigException {
@@ -100,11 +112,11 @@ public class KeyCreator {
 		byte[] ivBytes = Arrays.copyOfRange(deciphered, keyByteLen, keyByteLen + getCipher().getIvecByteLength());
 		return new Key(keyBytes, ivBytes);
 	}
-	
+
 	public CipherAlgorithm getCipher() {
 		return cipher;
 	}
-	
+
 	public Config getConfig() {
 		return config;
 	}
