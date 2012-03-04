@@ -30,8 +30,8 @@ import az.jefsr.crypto.CipherConfigException;
 import az.jefsr.crypto.CipherDataException;
 import az.jefsr.crypto.Coder;
 import az.jefsr.crypto.CoderFactory;
-import az.jefsr.crypto.KeyCreator;
 import az.jefsr.crypto.Key;
+import az.jefsr.crypto.KeyCreator;
 import az.jefsr.file.FileDecoder;
 import az.jefsr.file.FileDecoderFactory;
 import az.jefsr.file.FileDecoderInputStream;
@@ -141,7 +141,22 @@ public class Volume {
 	public Config getConfig() {
 		return config;
 	}
-	
+
+	@Override
+	public boolean equals(Object other) {
+		boolean ret = false;
+		if (other instanceof Volume) {
+			Volume otherVolume = (Volume) other;
+			ret = this.config.equals(otherVolume.config);
+		}
+		return ret;
+	}
+
+	@Override
+	public int hashCode() {
+		return config.hashCode();
+	}
+
 	private Config config;
 	private Coder cryptoCoder;
 	private NameDecoder nameDecoder;

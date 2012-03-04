@@ -16,6 +16,7 @@
  ******************************************************************************/
 package az.jefsr.config;
 
+
 /** Object containing EncFS volume configuration data. Currently, it mirrors the structure of .encfs6.xml file.
  */
 public class Config {
@@ -25,17 +26,36 @@ public class Config {
 	}
 	
 	public static class CipherDescription {
-		
+
 		public String getName() {
 			return name;
 		}
+
 		public int getMajor() {
 			return major;
 		}
+
 		public int getMinor() {
 			return minor;
 		}
-		
+
+		@Override
+		public boolean equals(Object other) {
+			boolean ret = false;
+			if (other instanceof CipherDescription) {
+				CipherDescription otherDescr = (CipherDescription) other;
+				ret = this.name.equals(otherDescr.name) &&
+					this.major == otherDescr.major &&
+					this.minor == otherDescr.minor;
+			}
+			return ret;
+		}
+
+		@Override
+		public int hashCode() {
+			return name.hashCode() + major + 1024 * minor;
+		}
+
 		private String name;
 		private int major;
 		private int minor;
@@ -185,7 +205,56 @@ public class Config {
 	public void setDesiredKDFDuration(int desiredKDFDuration) {
 		this.desiredKDFDuration = desiredKDFDuration;
 	}
-	
+
+	@Override
+	public boolean equals(Object other) {
+		boolean ret = false;
+		if (other instanceof Config) {
+			Config otherVolume = (Config) other;
+			ret = this.version.equals(otherVolume.version) &&
+                this.creator.equals(otherVolume.creator) &&
+                this.cipherAlg.equals(otherVolume.cipherAlg) &&
+                this.nameAlg.equals(otherVolume.nameAlg) &&
+                this.keySize == otherVolume.keySize &&
+                this.blockSize == otherVolume.blockSize &&
+                this.uniqueIV == otherVolume.uniqueIV &&
+                this.chainedNameIV == otherVolume.chainedNameIV &&
+                this.externalIVChaining == otherVolume.externalIVChaining &&
+                this.blockMACBytes == otherVolume.blockMACBytes &&
+                this.blockMACRandBytes == otherVolume.blockMACRandBytes &&
+                this.allowHoles == otherVolume.allowHoles &&
+                this.encodedKeySize == otherVolume.encodedKeySize &&
+                this.encodedKeyData.equals(otherVolume.encodedKeyData) &&
+                this.saltLen == otherVolume.saltLen &&
+                this.saltData.equals(otherVolume.saltData) &&
+                this.kdfIterations == otherVolume.kdfIterations &&
+                this.desiredKDFDuration == otherVolume.desiredKDFDuration;
+		}
+		return ret;
+	}
+
+	@Override
+	public int hashCode() {
+		return version.hashCode() +
+            creator.hashCode() +
+            cipherAlg.hashCode() +
+            nameAlg.hashCode() +
+            keySize * 16 +
+            blockSize * 32 +
+            uniqueIV * 64 +
+            chainedNameIV * 128 +
+            externalIVChaining * 256 +
+            blockMACBytes * 512 +
+            blockMACRandBytes * 1024 +
+            allowHoles * 2048 +
+            encodedKeySize * 4096 +
+            encodedKeyData.hashCode() +
+            saltLen * 8192 +
+            saltData.hashCode() +
+            kdfIterations + 16384 +
+            desiredKDFDuration + 32768;
+	}
+
 	private String version;
 	private String creator;
 	private CipherDescription cipherAlg;
