@@ -6,7 +6,7 @@ import java.util.List;
 public class PBKDF2 {
 
 	public interface Callback {
-		void onProgress(int requestNumber, int percentCompleted);
+		boolean onProgress(int requestNumber, int percentCompleted);
 	}
 
 	private PBKDF2() {
@@ -23,8 +23,8 @@ public class PBKDF2 {
 	public byte[] deriveKey(byte[] password, byte[] salt, int iterCount, int keyLengthInBit) {
 		return deriveKey(generateRequestNumber(), password, salt, iterCount, keyLengthInBit, new PBKDF2.Callback() {
 			@Override
-			public void onProgress(int requestNumber, int percentCompleted) {
-				PBKDF2.this.onProgress(requestNumber, percentCompleted);
+			public boolean onProgress(int requestNumber, int percentCompleted) {
+				return PBKDF2.this.onProgress(requestNumber, percentCompleted);
 			}
 		});
 	}
@@ -37,10 +37,12 @@ public class PBKDF2 {
 		mCallbacks.remove(cb);
 	}
 
-	private void onProgress(int requestNumber, int percentCompleted) {
+	private boolean onProgress(int requestNumber, int percentCompleted) {
+		boolean continueLooping = true;
 		for (Callback cb: mCallbacks) {
-			cb.onProgress(requestNumber, percentCompleted);
+			continueLooping &= cb.onProgress(requestNumber, percentCompleted);
 		}
+		return continueLooping;
 	}
 
 	private synchronized int generateRequestNumber() {
