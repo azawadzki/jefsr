@@ -66,7 +66,7 @@ public abstract class NameDecoder {
 	
 	protected abstract String decodePathElements(String path, ChainedIv iv) throws CipherDataException;
 
-	private List<String> getPathElements(String path) {
+	private List<String> getPathElements(String path) throws CipherDataException {
 		List<String> elems = new ArrayList<String>();
 		try {
 			String onlySlashes = path.replace("\\", "/");
@@ -78,8 +78,7 @@ public abstract class NameDecoder {
 			    }
 			}
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			// returning empty list is enough for error handling 
+			throw new CipherDataException(e);
 		}
 		return elems;
 	}
