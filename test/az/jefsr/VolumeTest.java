@@ -24,7 +24,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.util.Arrays;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -32,6 +31,7 @@ import org.junit.Test;
 import az.jefsr.config.UnsupportedFormatException;
 import az.jefsr.crypto.CipherConfigException;
 import az.jefsr.crypto.CipherDataException;
+import az.jefsr.util.Arrays;
 
 public class VolumeTest {
 

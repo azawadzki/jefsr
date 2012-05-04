@@ -25,7 +25,7 @@ public class FileDecoderInputStream extends InputStream {
 					return -1;
 				}
 			} catch (CipherDataException e) {
-				throw new IOException(e);
+				throw new IOException(e.toString());
 			}
 			mAvailable = read;
 			mPosition = 0;

@@ -16,8 +16,6 @@
  ******************************************************************************/
 package az.jefsr.crypto;
 
-import java.util.Arrays;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -25,6 +23,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import az.jefsr.crypto.fixtures.FSFixture;
 import az.jefsr.crypto.fixtures.FSParanoidAes;
+import az.jefsr.util.Arrays;
 
 public class KeyTest {
 

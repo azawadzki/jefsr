@@ -17,13 +17,13 @@
 package az.jefsr.crypto.fixtures;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 import az.jefsr.config.Config;
 import az.jefsr.config.ConfigReader;
 import az.jefsr.crypto.CipherConfigException;
 import az.jefsr.crypto.Key;
+import az.jefsr.util.Arrays;
 
 public abstract class FSFixture {
 	public abstract String getUserPassword();

@@ -21,7 +21,6 @@ import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,6 +35,7 @@ import az.jefsr.crypto.CoderFactory;
 import az.jefsr.crypto.Key;
 import az.jefsr.crypto.fixtures.FSFixture;
 import az.jefsr.crypto.fixtures.FSParanoidAes;
+import az.jefsr.util.Arrays;
 
 public class MacFileDecoderTest {
 

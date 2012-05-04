@@ -18,12 +18,12 @@ package az.jefsr.file;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 
 import az.jefsr.config.Config;
 import az.jefsr.crypto.CipherDataException;
 import az.jefsr.crypto.Coder;
 import az.jefsr.crypto.MacUtils;
+import az.jefsr.util.Arrays;
 
 class MacFileDecoder extends BlockFileDecoder {
 

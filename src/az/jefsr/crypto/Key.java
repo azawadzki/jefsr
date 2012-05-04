@@ -18,10 +18,11 @@ package az.jefsr.crypto;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import az.jefsr.util.Arrays;
 
 /** Key object ties key data with corresponding iv.
  */

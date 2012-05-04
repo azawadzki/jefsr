@@ -17,13 +17,13 @@
 package az.jefsr.file;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import az.jefsr.config.Config;
 import az.jefsr.crypto.ChainedIv;
 import az.jefsr.crypto.CipherDataException;
 import az.jefsr.crypto.Coder;
 import az.jefsr.crypto.MacUtils;
+import az.jefsr.util.Arrays;
 import az.jefsr.util.ByteEncoder;
 
 class BlockNameDecoder extends NameDecoder {

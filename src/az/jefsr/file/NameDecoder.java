@@ -20,7 +20,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,6 +27,7 @@ import az.jefsr.config.Config;
 import az.jefsr.crypto.ChainedIv;
 import az.jefsr.crypto.CipherDataException;
 import az.jefsr.crypto.Coder;
+import az.jefsr.util.Arrays;
 
 public abstract class NameDecoder {
 	
@@ -47,7 +47,8 @@ public abstract class NameDecoder {
 		}
 		String output = "";
 		for (String el: getPathElements(path)) {
-			if (!output.isEmpty()) {
+			// no isEmpty in Java <= 5 (And2.2)
+			if (output.length() != 0) {
 				output += File.separator;
 			}
 			output += decodePathElements(el, iv);
@@ -73,7 +74,8 @@ public abstract class NameDecoder {
 			String normalized = new URI(onlySlashes).normalize().getPath();
 			elems.addAll(Arrays.asList(normalized.split("/")));
 			for (Iterator<String> it = elems.iterator(); it.hasNext(); ) {
-			    if (it.next().isEmpty()) {
+				// no isEmpty in Java <= 5 (And2.2)
+			    if (it.next().length() == 0) {
 			        it.remove();
 			    }
 			}

@@ -23,7 +23,6 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Arrays;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -33,6 +32,7 @@ import javax.crypto.spec.SecretKeySpec;
 import net.iharder.base64.Base64;
 import az.jefsr.config.Config;
 import az.jefsr.nativeext.PBKDF2;
+import az.jefsr.util.Arrays;
 
 public class KeyCreator {
 	
