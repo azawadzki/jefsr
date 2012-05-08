@@ -38,6 +38,9 @@ public class StreamNameDecoder extends NameDecoder {
 	@Override
 	protected String decodePathElements(String filename, ChainedIv iv) throws CipherDataException {
 		byte[] encFilenameData = decodeFilenameData(filename);
+		if (encFilenameData.length <= MAC_BYTES) {
+			throw new CipherDataException("BUffer underflow");
+		}
 		long mac = 0xffff & ByteBuffer.wrap(encFilenameData, 0, MAC_BYTES).asShortBuffer().get();
 		byte[] encFilename = Arrays.copyOfRange(encFilenameData, MAC_BYTES, encFilenameData.length);
 		long seed = getUpdateIvSeed(iv, mac);
